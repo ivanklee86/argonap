@@ -1,0 +1,59 @@
+{
+	"name": "fullstack",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "..",
+		"args": {
+			// Update 'VARIANT' to pick a Golang version
+			// Append -bullseye or -buster to pin to an OS version.
+			// Use -bullseye variants on local on arm64/Apple Silicon.
+			"VARIANT": "1.22",
+
+			// Choose node version or none to skip.
+			"NODE_VERSION": "none"
+		}
+	},
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"yaml.schemas": {
+					"https://taskfile.dev/schema.json": [
+						"**/Taskfile.yml",
+						"tasks/**"
+					]
+				}
+			},
+
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"github.vscode-github-actions",
+				"golang.go",
+                "ms-azuretools.vscode-docker",
+				"ms-vscode.vscode-typescript-next",
+				"redhat.vscode-yaml",
+				"ritwickdey.LiveServer",
+				"tamasfe.even-better-toml",
+				"task.vscode-task"
+			]
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "bash ./.devcontainer/post_install.sh",
+
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"dockerDashComposeVersion": "v2"
+		}
+	},
+
+	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "vscode"
+}
