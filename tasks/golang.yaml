@@ -1,0 +1,50 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  BUILD_DIR: bin
+  TEST_REPORT: tests.xml
+  COVERAGE_RAW: coverage.out
+  COVERAGE_REPORT: coverage.html
+  VERSION: "Task"
+
+tasks:
+  install:
+    desc: Installs Golang dependencies and testing tools.
+    cmds:
+      - go get ./...
+
+  install-ci:
+    desc: Install packages and CI/CD tools.
+    cmds:
+      - task: install
+      - go install github.com/jstemmer/go-junit-report/v2@latest
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+  
+  build:
+    desc: Builds binary.
+    cmds:
+      - mkdir {{.BUILD_DIR}} | true
+      - go build -ldflags "-X main.version=${VERSION}" -o {{.BUILD_DIR}} ./...
+
+  fmt:
+    desc: Formats Golang code.
+    cmds:
+      - go fmt $(go list ./...)
+  
+  lint:
+    desc: Lints Golang code.
+    cmds:
+      - golangci-lint run
+
+  test:
+    desc: Run Golang tests.
+    cmds:
+      - go test -v ./... 2>&1
+  
+  test-ci:
+    desc: Run Golang tests and generate coverage report.
+    cmds:
+      - go test --coverprofile {{.COVERAGE_RAW}} -v ./... 2>&1  | go-junit-report > report.xml
+      - go tool cover -html={{.COVERAGE_RAW}} -o {{.COVERAGE_REPORT}}
