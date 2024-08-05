@@ -10,6 +10,17 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 USER vscode
 
 # Install tools
-RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.58.1
+# - Tools
 RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
+
+# - Golang
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.58.1
 RUN go install github.com/jstemmer/go-junit-report/v2@latest
+
+# - Kubernetes
+RUN curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+
+COPY --from=bitnami/kubectl /opt/bitnami/kubectl/bin/kubectl /usr/local/bin
+COPY --from=alpine/helm /usr/bin/helm /usr/local/bin
+COPY --from=derailed/k9s /bin/k9s /usr/local/bin
+
