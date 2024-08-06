@@ -1,0 +1,42 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  CLUSTER_NAME: local
+
+tasks:
+  start:
+    desc: "Start :allthethings:!"
+    cmds:
+      - task: cluster:create
+      - task: cluster:configs
+
+  cluster:create:
+    desc: "Create k3d cluster."
+    cmds:
+      - k3d cluster create {{.CLUSTER_NAME}} --config ./k3d-config.yaml
+      - kubectl get nodes
+
+  cluster:delete:
+    desc: "Clean up k3d cluster."
+    cmds:
+      - k3d cluster delete {{.CLUSTER_NAME}}
+
+  cluster:configs:
+    desc: "Get k3d cluster config."
+    cmds:
+      - mkdir ~/.kube || true
+      - k3d kubeconfig get {{.CLUSTER_NAME}} > ~/.kube/config
+
+  bootstrap:
+    desc: "Bootstrap kubernetes"
+    cmds:
+      - task: bootstrap-argocd
+
+  bootstrap-argocd:
+    desc: "Bootstrap ArgoCD."
+    cmds:
+      - helm install argocd kubernetes/applications/argo/argocd --namespace argocd --create-namespace 
+      - kubectl --namespace argocd delete secret -l owner=helm,name=argocd
+      - kubectl apply --context k3d-{{.CLUSTER_NAME}} --namespace argocd -f kubernetes/bootstrap/homelab.yaml
