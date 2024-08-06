@@ -10,7 +10,7 @@ tasks:
     desc: "Start :allthethings:!"
     cmds:
       - task: cluster:create
-      - task: cluster:configs
+      - task: bootstrap
 
   cluster:create:
     desc: "Create k3d cluster."
@@ -22,21 +22,27 @@ tasks:
     desc: "Clean up k3d cluster."
     cmds:
       - k3d cluster delete {{.CLUSTER_NAME}}
-
+  
   cluster:configs:
     desc: "Get k3d cluster config."
     cmds:
       - mkdir ~/.kube || true
       - k3d kubeconfig get {{.CLUSTER_NAME}} > ~/.kube/config
 
-  bootstrap:
-    desc: "Bootstrap kubernetes"
+  helm:update:
+    desc: Update helm dependencies.
+    dir: "{{.USER_WORKING_DIR}}"
     cmds:
-      - task: bootstrap-argocd
+      - helm dep update
 
-  bootstrap-argocd:
-    desc: "Bootstrap ArgoCD."
+  helm:template:
+    desc: Update helm dependencies.
+    dir: "{{.USER_WORKING_DIR}}"
     cmds:
-      - helm install argocd kubernetes/applications/argo/argocd --namespace argocd --create-namespace 
-      - kubectl --namespace argocd delete secret -l owner=helm,name=argocd
-      - kubectl apply --context k3d-{{.CLUSTER_NAME}} --namespace argocd -f kubernetes/bootstrap/homelab.yaml
+      - task: helm:update
+      - helm template . >> manifests.yaml
+
+  bootstrap:
+    desc: "Bootstrap k8s apps."
+    cmds:
+      - helm install argocd kubernetes/argocd --namespace argocd --create-namespace 
