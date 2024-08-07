@@ -12,6 +12,7 @@ tasks:
       - task: cluster:create
       - task: bootstrap
 
+  # Cluster management
   cluster:create:
     desc: "Create k3d cluster."
     cmds:
@@ -23,12 +24,13 @@ tasks:
     cmds:
       - k3d cluster delete {{.CLUSTER_NAME}}
   
-  cluster:configs:
+  cluster:config:
     desc: "Get k3d cluster config."
     cmds:
       - mkdir ~/.kube || true
       - k3d kubeconfig get {{.CLUSTER_NAME}} > ~/.kube/config
 
+  # Handy Helm shortcuts
   helm:update:
     desc: Update helm dependencies.
     dir: "{{.USER_WORKING_DIR}}"
@@ -42,7 +44,15 @@ tasks:
       - task: helm:update
       - helm template . >> manifests.yaml
 
+  # App deployments.
   bootstrap:
-    desc: "Bootstrap k8s apps."
+    desc: "Bootstrap apps"
     cmds:
-      - helm install argocd kubernetes/argocd --namespace argocd --create-namespace 
+      - task: bootstrap:argocd
+
+  bootstrap:argocd:
+    desc: "Bootstrap ArgoCD."
+    cmds:
+      - helm repo add argocd https://argoproj.github.io/argo-helm
+      - cd kubernetes/argocd; helm dependency build
+      - helm install argocd kubernetes/argocd --namespace default

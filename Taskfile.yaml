@@ -4,3 +4,4 @@ version: '3'
 includes:
   golang: ./tasks/golang.yaml
   k8s: ./tasks/k8s.yaml
+  argocd: ./tasks/argocd.yaml

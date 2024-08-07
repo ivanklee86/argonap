@@ -1,5 +1,5 @@
 kind: Simple
-apiVersion: k3d.io/v1alpha4
+apiVersion: k3d.io/v1alpha5
 servers: 1
 agents: 2
 options:
