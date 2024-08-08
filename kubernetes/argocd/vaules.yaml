@@ -1,8 +1,0 @@
-argo-cd:
-  configs:
-    cm:
-      accounts.automation: apiKey
-  
-  rbac:
-    policy.csv: |
-      g, automation, role:admin

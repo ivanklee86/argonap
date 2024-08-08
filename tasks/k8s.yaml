@@ -42,7 +42,7 @@ tasks:
     dir: "{{.USER_WORKING_DIR}}"
     cmds:
       - task: helm:update
-      - helm template . >> manifests.yaml
+      - helm template --values values.yaml . > manifests.yaml
 
   # App deployments.
   bootstrap:
