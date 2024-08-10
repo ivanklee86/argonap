@@ -7,3 +7,23 @@ tasks:
     desc: "Port forward to ArgoCD server"
     cmds:
       - kubectl port-forward deployment/argocd-server 8080:8080
+
+  password:
+    desc: "Get ArgoCD password"
+    cmds:
+      - kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+
+  login:
+    desc: "Log in to ArgoCD"
+    cmds:
+      - argocd login localhost:8080 --username {{ .ARGOCD_USERNAME }} --password {{ .ARGOCD_PASSWORD }} --insecure
+    vars:
+      ARGOCD_USERNAME: admin
+      ARGOCD_PASSWORD:
+        sh: kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+
+  token:
+    desc: "Generate token for service account."
+    cmds:
+      - task: login
+      - ./scripts/template_dotenv.sh

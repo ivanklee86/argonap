@@ -12,10 +12,12 @@ USER vscode
 # Install tools
 # - Tools
 RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
+COPY --from=quay.io/argoproj/argocd /usr/local/bin/argocd /usr/local/bin
 
 # - Golang
 RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.58.1
 RUN go install github.com/jstemmer/go-junit-report/v2@latest
+RUN go install github.com/hairyhenderson/gomplate/v4/cmd/gomplate@latest
 
 # - Kubernetes
 RUN curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash

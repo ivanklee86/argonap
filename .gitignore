@@ -31,3 +31,6 @@ manifest*.yaml
 .terraform.lock.hcl
 .task
 **/**/vendor
+
+# Bin
+bin
