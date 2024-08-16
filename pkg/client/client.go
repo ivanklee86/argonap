@@ -1,4 +1,4 @@
-package argocd_client
+package octanap
 
 import (
 	"context"
