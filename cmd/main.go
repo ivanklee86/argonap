@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ivanklee86/octanap/pkg/octanap"
+	"github.com/ivanklee86/octanap/pkg/cli"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -30,7 +30,7 @@ func main() {
 }
 
 func NewRootCommand() *cobra.Command {
-	octanap := octanap.New()
+	octanap := cli.New()
 
 	cmd := &cobra.Command{
 		Use:     "octanap",

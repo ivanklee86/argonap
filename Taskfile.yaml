@@ -2,6 +2,6 @@
 version: '3'
 
 includes:
-  golang: ./tasks/golang.yaml
+  go: ./tasks/go.yaml
   k8s: ./tasks/k8s.yaml
   argocd: ./tasks/argocd.yaml

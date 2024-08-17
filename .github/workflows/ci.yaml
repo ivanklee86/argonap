@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+
+permissions:
+  checks: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: 1.22
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - uses: actions/cache@v4
+      with:
+        path: |
+          ~/go/pkg/mod
+          ~/.cache/go-build
+          ~/Library/Caches/go-build
+          %LocalAppData%\go-build
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+    - name: Install Task
+      uses: arduino/setup-task@v1
+    - name: Install all dependencies
+      run: |
+        task go:install-ci
+    - name: Run tests.
+      run: |
+        task go:test-ci
+    - name: Lint code.
+      run: |
+        task go:lint
+    - name: Publish Unit Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: report.xml
+    - name: Generate lcov coverage report.
+      uses: jandelgado/gcov2lcov-action@v1.0.9
+    - name: Coveralls 
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: coverage.lcov
+    - name: Save artifacts.
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: Coverage report.
+        path: ./coverage.html
+
+  format:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: 1.22.x
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Generate format report.
+      run: gofmt -d .
+    - name: Run format again (so job will error if format issues found).
+      run: test -z $(gofmt -l .)

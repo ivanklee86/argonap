@@ -1,4 +1,4 @@
-package octanap
+package cli
 
 import (
 	"fmt"
