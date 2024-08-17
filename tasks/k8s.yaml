@@ -49,6 +49,7 @@ tasks:
     desc: "Bootstrap apps"
     cmds:
       - task: bootstrap:argocd
+      - task: bootstrap:ingress-nginx
 
   bootstrap:argocd:
     desc: "Bootstrap ArgoCD."
@@ -56,3 +57,10 @@ tasks:
       - helm repo add argocd https://argoproj.github.io/argo-helm
       - cd kubernetes/argocd; helm dependency build
       - helm install argocd kubernetes/argocd --namespace default
+
+  bootstrap:ingress-nginx:
+    desc: "Bootstrap Ingress"
+    cmds:
+      - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+      - cd kubernetes/ingress-nginx; helm dependency build
+      - helm install ingress-nginx kubernetes/ingress-nginx --namespace default

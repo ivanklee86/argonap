@@ -1,0 +1,3 @@
+ingress-nginx:
+    admissionWebhooks:
+      enabled: false
