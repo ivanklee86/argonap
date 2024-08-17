@@ -30,7 +30,7 @@ func New(aco *ArgoCDClientOptions) (IArgoCDClient, error) {
 		ServerAddr: aco.ServerAddr,
 		Insecure:   aco.Insecure,
 		AuthToken:  aco.AuthToken,
-		GRPCWeb: true,
+		GRPCWeb:    true,
 	})
 	if err != nil {
 		return nil, err
