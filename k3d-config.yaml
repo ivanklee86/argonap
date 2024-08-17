@@ -1,10 +1,19 @@
 kind: Simple
 apiVersion: k3d.io/v1alpha5
 servers: 1
-agents: 2
+agents: 1
+ports:
+  - port: 8080:443
+    nodeFilters:
+      - loadbalancer
 options:
   k3d:
     wait: true
+  k3s:
+    extraArgs:
+      - arg: --disable=traefik
+        nodeFilters: 
+          - server:*
   kubeconfig:
     updateDefaultKubeconfig: true
     switchCurrentContext: true

@@ -3,11 +3,6 @@ version: '3'
 
 
 tasks:
-  portforward:
-    desc: "Port forward to ArgoCD server"
-    cmds:
-      - kubectl port-forward deployment/argocd-server 8080:8080 &
-
   password:
     desc: "Get ArgoCD password"
     cmds:
@@ -16,7 +11,7 @@ tasks:
   login:
     desc: "Log in to ArgoCD"
     cmds:
-      - argocd login localhost:8080 --username {{ .ARGOCD_USERNAME }} --password {{ .ARGOCD_PASSWORD }} --insecure
+      - argocd login localhost:8080 --username {{ .ARGOCD_USERNAME }} --password {{ .ARGOCD_PASSWORD }} --insecure --grpc-web
     vars:
       ARGOCD_USERNAME: admin
       ARGOCD_PASSWORD:

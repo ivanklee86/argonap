@@ -6,3 +6,6 @@ argo-cd:
     rbac:
       policy.csv: |
         g, automation, role:admin
+
+    params:
+      server.insecure: true
