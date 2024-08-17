@@ -27,5 +27,5 @@ func TestRoot(t *testing.T) {
 
 	fmt.Print(string(out))
 
-	assert.Contains(t, string(out), "otanap")
+	assert.Contains(t, string(out), "octanap")
 }

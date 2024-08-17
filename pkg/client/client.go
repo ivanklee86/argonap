@@ -1,4 +1,4 @@
-package octanap
+package client
 
 import (
 	"context"
@@ -26,8 +26,8 @@ type ArgoCDClient struct {
 func NewArgoCDClient(aco *ArgoCDClientOptions) (IArgoCDClient, error) {
 	apiClient, err := apiclient.NewClient(&apiclient.ClientOptions{
 		ServerAddr: aco.ServerAddr,
-		Insecure: aco.Insecure,
-		AuthToken: aco.AuthToken,
+		Insecure:   aco.Insecure,
+		AuthToken:  aco.AuthToken,
 	})
 	if err != nil {
 		return nil, err
