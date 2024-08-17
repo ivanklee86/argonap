@@ -49,7 +49,7 @@ jobs:
     - name: Run tests.
       run: |
         kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server
-        task argocd:portforward
+        kubectl port-forward deployment/argocd-server 8080:8080 &
         task argocd:token
         task go:test-ci
     - name: Lint code.
