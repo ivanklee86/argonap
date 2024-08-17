@@ -6,11 +6,13 @@ import (
 	"github.com/argoproj/argo-cd/v2/pkg/apiclient"
 	"github.com/argoproj/argo-cd/v2/pkg/apiclient/project"
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type IArgoCDClient interface {
 	CreateProject(context.Context, string) (*v1alpha1.AppProject, error)
+	ListProjects(context.Context) (*v1alpha1.AppProjectList, error)
+	GetProject(context.Context, string) (*v1alpha1.AppProject, error)
 }
 
 type ArgoCDClientOptions struct {
@@ -23,7 +25,7 @@ type ArgoCDClient struct {
 	ProjectClient project.ProjectServiceClient
 }
 
-func NewArgoCDClient(aco *ArgoCDClientOptions) (IArgoCDClient, error) {
+func New(aco *ArgoCDClientOptions) (IArgoCDClient, error) {
 	apiClient, err := apiclient.NewClient(&apiclient.ClientOptions{
 		ServerAddr: aco.ServerAddr,
 		Insecure:   aco.Insecure,
@@ -41,6 +43,14 @@ func NewArgoCDClient(aco *ArgoCDClientOptions) (IArgoCDClient, error) {
 	return &ArgoCDClient{
 		ProjectClient: projectClient,
 	}, nil
+}
+
+func (c *ArgoCDClient) ListProjects(ctx context.Context) (*v1alpha1.AppProjectList, error) {
+	return c.ProjectClient.List(ctx, &project.ProjectQuery{})
+}
+
+func (c *ArgoCDClient) GetProject(ctx context.Context, name string) (*v1alpha1.AppProject, error) {
+	return c.ProjectClient.Get(ctx, &project.ProjectQuery{Name: name})
 }
 
 func (c *ArgoCDClient) CreateProject(ctx context.Context, name string) (*v1alpha1.AppProject, error) {
