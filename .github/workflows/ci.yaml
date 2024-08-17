@@ -48,6 +48,7 @@ jobs:
         task go:install-ci
     - name: Run tests.
       run: |
+        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server
         task argocd:portforward
         task argocd:token
         task go:test-ci
