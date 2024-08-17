@@ -38,6 +38,9 @@ jobs:
     - name: Run tests.
       run: |
         task go:test-ci
+    - name: Lint code.
+      run: |
+        task go:lint
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
@@ -70,12 +73,3 @@ jobs:
       run: gofmt -d .
     - name: Run format again (so job will error if format issues found).
       run: test -z $(gofmt -l .)
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: latest
