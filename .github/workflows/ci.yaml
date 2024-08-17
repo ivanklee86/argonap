@@ -38,11 +38,14 @@ jobs:
       run: curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
     - name: Set up ArgoCD
       run: task k8s:start
+    - name: Connect to ArgoCD
     - name: Install all dependencies
       run: |
         task go:install-ci
     - name: Run tests.
       run: |
+        task argocd:portforward
+        task argocd:token
         task go:test-ci
     - name: Lint code.
       run: |
