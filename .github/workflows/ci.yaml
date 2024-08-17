@@ -36,6 +36,8 @@ jobs:
       uses: crazy-max/ghaction-setup-docker@v3
     - name: Install k3d
       run: curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.0.0 bash
+    - name: Set up ArgoCD
+      run: task k8s:start
     - name: Install all dependencies
       run: |
         task go:install-ci
