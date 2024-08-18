@@ -41,7 +41,5 @@ func (octanap octanap) Output(msg interface{}) {
 // Error pritns an error to stderr and exits with error code 1.
 func (octanap octanap) Error(msg interface{}) {
 	printToStreamWithColor(octanap.Err, text.FgHiRed, fmt.Sprintf("Error: %v\n", msg))
-	if !octanap.NoExitCode {
-		os.Exit(1)
-	}
+	os.Exit(1)
 }

@@ -3,16 +3,29 @@ package cli
 import (
 	"bytes"
 	"io"
+	"os"
 	"testing"
 
 	"github.com/acarl005/stripansi"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestOutputs(t *testing.T) {
+	err := godotenv.Load("../../.env")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	config := Config{
+		ServerAddr: "localhost:8080",
+		Insecure:   true,
+		AuthToken:  os.Getenv("ARGOCD_TOKEN"),
+	}
+
 	b := bytes.NewBufferString("")
 
-	octanap := New()
+	octanap := NewWithConfig(config)
 	octanap.Out = b
 	octanap.Err = b
 
