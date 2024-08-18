@@ -2,29 +2,13 @@ package client
 
 import (
 	"context"
-	"fmt"
-	"math/rand"
 	"os"
 	"testing"
-	"time"
 
+	"github.com/ivanklee86/octanap/pkg/testhelpers"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
-
-func randomProjectName() string {
-	const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
-	seed := rand.NewSource(time.Now().UnixNano())
-	random := rand.New(seed)
-	length := 5
-
-	randomString := make([]byte, length)
-	for i := range randomString {
-		randomString[i] = charset[random.Intn(len(charset))]
-	}
-
-	return fmt.Sprintf("project%s", string(randomString))
-}
 
 func TestClinet(t *testing.T) {
 	err := godotenv.Load("../../.env")
@@ -44,12 +28,12 @@ func TestClinet(t *testing.T) {
 	}
 
 	t.Run("Can create projects", func(t *testing.T) {
-		projectName := randomProjectName()
+		projectName := testhelpers.RandomProjectName()
 		_, err = client.CreateProject(context.Background(), projectName)
 		if err != nil {
 			t.Fatal(err)
 		}
-		defer client.DeleteProject(context.Background(), projectName)
+		defer client.DeleteProject(context.Background(), projectName) //nolint:all
 
 		projects, err := client.ListProjects(context.Background())
 		if err != nil {
@@ -65,13 +49,13 @@ func TestClinet(t *testing.T) {
 	})
 
 	t.Run("Can update projects", func(t *testing.T) {
-		projectName := randomProjectName()
+		projectName := testhelpers.RandomProjectName()
 
 		project, err := client.CreateProject(context.Background(), projectName)
 		if err != nil {
 			t.Fatal(err)
 		}
-		defer client.DeleteProject(context.Background(), projectName)
+		defer client.DeleteProject(context.Background(), projectName) //nolint:all
 
 		project.Annotations = make(map[string]string)
 		project.Annotations["test"] = "value"

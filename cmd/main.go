@@ -48,7 +48,9 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 
-	cmd.PersistentFlags().BoolVar(&octanap.NoExitCode, "no-exit-on-fail", false, "Don't return a non-zero exit code on failure.")
+	cmd.PersistentFlags().StringVar(&octanap.ServerAddr, "server-address", "", "ArgoCD server address")
+	cmd.PersistentFlags().BoolVar(&octanap.Insecure, "insecure", false, "Don't validate SSL certificate on client request.")
+	cmd.PersistentFlags().StringVar(&octanap.AuthToken, "auth-token", "", "JWT Authentication Token")
 
 	return cmd
 }
