@@ -4,7 +4,7 @@ import (
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 )
 
-func IsMapSubset[K, V comparable](m, sub map[K]V) bool {
+func isMapSubset[K, V comparable](m, sub map[K]V) bool {
 	if len(sub) > len(m) {
 		return false
 	}
@@ -20,7 +20,7 @@ func filterProjects(appProjects *v1alpha1.AppProjectList, labels map[string]stri
 	matchingProjects := []v1alpha1.AppProject{}
 
 	for _, appProject := range appProjects.Items {
-		if IsMapSubset(appProject.ObjectMeta.Labels, labels) {
+		if isMapSubset(appProject.ObjectMeta.Labels, labels) {
 			matchingProjects = append(matchingProjects, appProject)
 		}
 	}

@@ -23,11 +23,11 @@ func TestMapSubset(t *testing.T) {
 	differentValueMap["a"] = "c"
 
 	t.Run("Map contains a submap", func(t *testing.T) {
-		assert.Equal(t, true, IsMapSubset(bigMap, matchingMap))
+		assert.Equal(t, true, isMapSubset(bigMap, matchingMap))
 	})
 
 	t.Run("Map does not contains a submap", func(t *testing.T) {
-		assert.Equal(t, false, IsMapSubset(bigMap, notMatchingMap))
-		assert.Equal(t, false, IsMapSubset(bigMap, differentValueMap))
+		assert.Equal(t, false, isMapSubset(bigMap, notMatchingMap))
+		assert.Equal(t, false, isMapSubset(bigMap, differentValueMap))
 	})
 }
