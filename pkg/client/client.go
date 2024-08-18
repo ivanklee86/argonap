@@ -13,6 +13,8 @@ type IArgoCDClient interface {
 	CreateProject(context.Context, string) (*v1alpha1.AppProject, error)
 	ListProjects(context.Context) (*v1alpha1.AppProjectList, error)
 	GetProject(context.Context, string) (*v1alpha1.AppProject, error)
+	UpdateProject(ctx context.Context, updatedProject v1alpha1.AppProject) (*v1alpha1.AppProject, error)
+	DeleteProject(ctx context.Context, name string) (*project.EmptyResponse, error)
 }
 
 type ArgoCDClientOptions struct {
@@ -62,4 +64,14 @@ func (c *ArgoCDClient) CreateProject(ctx context.Context, name string) (*v1alpha
 			},
 		},
 	})
+}
+
+func (c *ArgoCDClient) UpdateProject(ctx context.Context, updatedProject v1alpha1.AppProject) (*v1alpha1.AppProject, error) {
+	return c.ProjectClient.Update(ctx, &project.ProjectUpdateRequest{
+		Project: &updatedProject,
+	})
+}
+
+func (c *ArgoCDClient) DeleteProject(ctx context.Context, name string) (*project.EmptyResponse, error) {
+	return c.ProjectClient.Delete(ctx, &project.ProjectQuery{Name: name})
 }
