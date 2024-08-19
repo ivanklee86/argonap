@@ -56,6 +56,16 @@ func TestProjectFilter(t *testing.T) {
 				Name:   "ProjectA",
 				Labels: labelsProjectA,
 			},
+			Spec: v1alpha1.AppProjectSpec{
+				SyncWindows: v1alpha1.SyncWindows{
+					{
+						Kind: "Allow",
+						Schedule: "10 1 * * *",
+						Duration: "1h",
+						Namespaces: []string{"*"},
+					},
+				},
+			},
 		},
 		{
 			ObjectMeta: metav1.ObjectMeta{
@@ -77,13 +87,13 @@ func TestProjectFilter(t *testing.T) {
 
 	t.Run("filterProjects returns all projects if no labels are specified", func(t *testing.T) {
 		tags := make(map[string]string)
-		assert.Len(t, filterProjects(&projectsList, tags), 3)
+		assert.Len(t, filterProjects(&projectsList, tags, false), 3)
 	})
 
 	t.Run("filterProjects returns a matching projects if labels are specified", func(t *testing.T) {
 		tags := make(map[string]string)
 		tags["team"] = "Eagles"
-		projectResult := filterProjects(&projectsList, tags)
+		projectResult := filterProjects(&projectsList, tags, false)
 		assert.Len(t, projectResult, 1)
 		assert.Equal(t, projectResult[0].ObjectMeta.Name, "ProjectC")
 	})
@@ -91,6 +101,14 @@ func TestProjectFilter(t *testing.T) {
 	t.Run("filterProjects returns some matching projects if labels are specified", func(t *testing.T) {
 		tags := make(map[string]string)
 		tags["env"] = "prod"
-		assert.Len(t, filterProjects(&projectsList, tags), 2)
+		assert.Len(t, filterProjects(&projectsList, tags, false), 2)
+	})
+	
+	t.Run("filterProjects returns proejcts with only SyncWindows", func(t *testing.T) {
+		tags := make(map[string]string)
+		tags["env"] = "prod"
+		projectResult := filterProjects(&projectsList, tags, true)
+		assert.Len(t, projectResult, 1)
+		assert.Equal(t, projectResult[0].ObjectMeta.Name, "ProjectA")
 	})
 }
