@@ -23,7 +23,7 @@ func filterProjects(appProjects *v1alpha1.AppProjectList, labels map[string]stri
 		if isMapSubset(appProject.ObjectMeta.Labels, labels) {
 			// Additional filter to only selct projects with SyncWindows.
 			if hasSyncWindow {
-				if appProject.Spec.SyncWindows != nil && len(appProject.Spec.SyncWindows) > 0 {
+				if len(appProject.Spec.SyncWindows) > 0 {
 					matchingProjects = append(matchingProjects, appProject)
 				}
 			} else {
