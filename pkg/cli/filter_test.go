@@ -59,9 +59,9 @@ func TestProjectFilter(t *testing.T) {
 			Spec: v1alpha1.AppProjectSpec{
 				SyncWindows: v1alpha1.SyncWindows{
 					{
-						Kind: "Allow",
-						Schedule: "10 1 * * *",
-						Duration: "1h",
+						Kind:       "Allow",
+						Schedule:   "10 1 * * *",
+						Duration:   "1h",
 						Namespaces: []string{"*"},
 					},
 				},
@@ -103,7 +103,7 @@ func TestProjectFilter(t *testing.T) {
 		tags["env"] = "prod"
 		assert.Len(t, filterProjects(&projectsList, tags, false), 2)
 	})
-	
+
 	t.Run("filterProjects returns proejcts with only SyncWindows", func(t *testing.T) {
 		tags := make(map[string]string)
 		tags["env"] = "prod"

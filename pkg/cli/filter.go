@@ -24,7 +24,7 @@ func filterProjects(appProjects *v1alpha1.AppProjectList, labels map[string]stri
 			// Additional filter to only selct projects with SyncWindows.
 			if hasSyncWindow {
 				if appProject.Spec.SyncWindows != nil && len(appProject.Spec.SyncWindows) > 0 {
-					matchingProjects = append(matchingProjects, appProject)	
+					matchingProjects = append(matchingProjects, appProject)
 				}
 			} else {
 				matchingProjects = append(matchingProjects, appProject)
