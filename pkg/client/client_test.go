@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/ivanklee86/octanap/pkg/testhelpers"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
@@ -59,6 +60,12 @@ func TestClinet(t *testing.T) {
 
 		project.Annotations = make(map[string]string)
 		project.Annotations["test"] = "value"
+		project.Spec.SyncWindows = append(project.Spec.SyncWindows, &v1alpha1.SyncWindow{
+			Kind:       "allow",
+			Schedule:   "10 1 * * *",
+			Duration:   "1h",
+			Namespaces: []string{"*"},
+		})
 
 		_, err = client.UpdateProject(context.Background(), *project)
 		if err != nil {
@@ -70,5 +77,17 @@ func TestClinet(t *testing.T) {
 			t.Fatal(err)
 		}
 		assert.Equal(t, project.Annotations["test"], "value")
+		assert.Len(t, project.Spec.SyncWindows, 1)
+
+		project, err = client.GetProject(context.Background(), projectName)
+		assert.Nil(t, err)
+
+		project.Spec.SyncWindows = nil
+		_, err = client.UpdateProject(context.Background(), *project)
+		assert.Nil(t, err)
+
+		project, err = client.GetProject(context.Background(), projectName)
+		assert.Nil(t, err)
+		assert.Len(t, project.Spec.SyncWindows, 0)
 	})
 }
