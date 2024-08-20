@@ -59,7 +59,7 @@ func TestProjectFilter(t *testing.T) {
 			Spec: v1alpha1.AppProjectSpec{
 				SyncWindows: v1alpha1.SyncWindows{
 					{
-						Kind:       "Allow",
+						Kind:       "allow",
 						Schedule:   "10 1 * * *",
 						Duration:   "1h",
 						Namespaces: []string{"*"},
