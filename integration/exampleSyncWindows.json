@@ -1,0 +1,14 @@
+[
+    {
+        "kind": "allow",
+        "schedule": "10 1 * * *",
+        "duration": "1h",
+        "namespaces": ["*"]
+    },
+    {
+        "kind": "deny",
+        "schedule": "11 3 * * *",
+        "duration": "1h",
+        "namespaces": ["*"]
+    }
+]
