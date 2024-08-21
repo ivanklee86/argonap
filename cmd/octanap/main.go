@@ -48,9 +48,26 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 
-	cmd.PersistentFlags().StringVar(&octanap.ServerAddr, "server-address", "", "ArgoCD server address")
-	cmd.PersistentFlags().BoolVar(&octanap.Insecure, "insecure", false, "Don't validate SSL certificate on client request.")
-	cmd.PersistentFlags().StringVar(&octanap.AuthToken, "auth-token", "", "JWT Authentication Token")
+	cmd.PersistentFlags().StringVar(&octanap.Config.ServerAddr, "server-address", "", "ArgoCD server address")
+	cmd.PersistentFlags().BoolVar(&octanap.Config.Insecure, "insecure", false, "Don't validate SSL certificate on client request.")
+	cmd.PersistentFlags().StringVar(&octanap.Config.AuthToken, "auth-token", "", "JWT Authentication Token")
+	cmd.PersistentFlags().BoolVar(&octanap.Config.ExitOnError, "do-not-exit", false, "Don't exit on errors.")
+
+	cmd.AddCommand(NewClearCommand(octanap))
+
+	return cmd
+}
+
+func NewClearCommand(octanap *cli.Octanap) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "clear",
+		Short: "Clear SyncWindows.",
+		Long:  "Clear SyncWindows on all AppProjects.",
+		Run: func(cmd *cobra.Command, args []string) {
+			octanap.Connect()
+			octanap.ClearSyncWindows()
+		},
+	}
 
 	return cmd
 }

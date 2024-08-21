@@ -12,3 +12,9 @@ tasks:
       - task: go:fmt
       - task: go:lint
       - task: go:test
+
+  services:
+    cmds:
+      - task: k8s:start
+      - task: argocd:healthcheck
+      - task: argocd:token

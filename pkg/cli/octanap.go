@@ -17,12 +17,13 @@ type Config struct {
 	Insecure        bool
 	AuthToken       string
 	DryRun          bool
-	Filters         map[string]string
+	Labels          map[string]string
 	SyncWindowsFile string
+	ExitOnError     bool
 }
 
 // Octanap is the logic/orchestrator.
-type octanap struct {
+type Octanap struct {
 	*Config
 
 	// Client
@@ -35,25 +36,25 @@ type octanap struct {
 }
 
 // New returns a new instance of octanap.
-func New() *octanap {
+func New() *Octanap {
 	config := Config{}
 
-	return &octanap{
+	return &Octanap{
 		Config: &config,
 		Out:    os.Stdout,
 		Err:    os.Stdin,
 	}
 }
 
-func NewWithConfig(config Config) *octanap {
-	return &octanap{
+func NewWithConfig(config Config) *Octanap {
+	return &Octanap{
 		Config: &config,
 		Out:    os.Stdout,
 		Err:    os.Stdin,
 	}
 }
 
-func (o *octanap) Connect() {
+func (o *Octanap) Connect() {
 	clientConfig := client.ArgoCDClientOptions{
 		ServerAddr: o.Config.ServerAddr,
 		Insecure:   o.Config.Insecure,
@@ -61,20 +62,29 @@ func (o *octanap) Connect() {
 	}
 	argocdClient, err := client.New(&clientConfig)
 	if err != nil {
-		o.Error(fmt.Sprintf("Error creating ArgoCD client: %s", err.Error()))
+		o.Error(fmt.Sprintf("Creating ArgoCD client: %s", err.Error()))
 	}
 
 	o.ArgoCDClient = argocdClient
 	o.ArgoCDClientConnected = true
 }
 
-func (o *octanap) SetSyncWindows() {
+func (o *Octanap) ClearSyncWindows() {
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*TIMEOUT)
 	defer cancel()
 
-	_, err := o.ArgoCDClient.ListProjects(ctxTimeout)
+	appProjects, err := o.ArgoCDClient.ListProjects(ctxTimeout)
 	if err != nil {
 		o.Error(fmt.Sprintf("Error fetching Projects: %s", err.Error()))
 	}
 
+	appProjectsToClear := filterProjects(appProjects, o.Config.Labels, true)
+
+	for _, appProjectToClear := range appProjectsToClear {
+		appProjectToClear.Spec.SyncWindows = nil
+		_, err := o.ArgoCDClient.UpdateProject(ctxTimeout, appProjectToClear)
+		if err != nil {
+			o.Error(fmt.Sprintf("Error updating %s project: %s", appProjectToClear.ObjectMeta.Name, err))
+		}
+	}
 }
