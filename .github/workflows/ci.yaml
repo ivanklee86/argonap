@@ -41,17 +41,14 @@ jobs:
         curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
         sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
         rm argocd-linux-amd64
-    - name: Set up ArgoCD
-      run: task services
     - name: Install all dependencies
-      run: |
-        task go:install-ci
+      run: task go:install-ci
+    - name: Start ArgoCD
+      run: task services
     - name: Run tests.
-      run: |
-        task go:test-ci
+      run: task go:test-ci
     - name: Lint code.
-      run: |
-        task go:lint
+      run: task go:lint
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
