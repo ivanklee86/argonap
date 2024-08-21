@@ -43,12 +43,12 @@ jobs:
         rm argocd-linux-amd64
     - name: Install all dependencies
       run: task go:install-ci
+    - name: Lint code.
+      run: task go:lint
     - name: Start ArgoCD
       run: task services
     - name: Run tests.
       run: task go:test-ci
-    - name: Lint code.
-      run: task go:lint
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
