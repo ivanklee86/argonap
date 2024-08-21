@@ -17,6 +17,12 @@ tasks:
       ARGOCD_PASSWORD:
         sh: kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 
+  healthcheck:
+    desc: "Wait for servies to start"
+    cmds:
+      - kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server
+      - kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=ingress-nginx
+
   token:
     desc: "Generate token for service account."
     cmds:

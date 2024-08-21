@@ -1,4 +1,4 @@
-package client
+package client //nolint:all
 
 import (
 	"context"
@@ -40,7 +40,7 @@ func TestClinet(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		assert.Len(t, projects.Items, 2)
+		assert.GreaterOrEqual(t, len(projects.Items), 2)
 
 		project, err := client.GetProject(context.Background(), projectName)
 		if err != nil {

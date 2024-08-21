@@ -17,7 +17,7 @@ type Config struct {
 	Insecure        bool
 	AuthToken       string
 	DryRun          bool
-	Filters         map[string]string
+	Labels          map[string]string
 	SyncWindowsFile string
 }
 
@@ -68,13 +68,22 @@ func (o *octanap) Connect() {
 	o.ArgoCDClientConnected = true
 }
 
-func (o *octanap) SetSyncWindows() {
+func (o *octanap) ClearSyncWindows() {
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*TIMEOUT)
 	defer cancel()
 
-	_, err := o.ArgoCDClient.ListProjects(ctxTimeout)
+	appProjects, err := o.ArgoCDClient.ListProjects(ctxTimeout)
 	if err != nil {
 		o.Error(fmt.Sprintf("Error fetching Projects: %s", err.Error()))
 	}
 
+	appProjectsToClear := filterProjects(appProjects, o.Config.Labels, true)
+
+	for _, appProjectToClear := range appProjectsToClear {
+		appProjectToClear.Spec.SyncWindows = nil
+		_, err := o.ArgoCDClient.UpdateProject(ctxTimeout, appProjectToClear)
+		if err != nil {
+			o.Error(fmt.Sprintf("Error updating %s project: %s", appProjectToClear.ObjectMeta.Name, err))
+		}
+	}
 }
