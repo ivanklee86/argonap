@@ -9,7 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func GenerateTestProjects() {
+func GenerateTestProjects() []*v1alpha1.AppProject {
 	err := godotenv.Load("../../.env")
 	if err != nil {
 		panic(err)
@@ -62,6 +62,8 @@ func GenerateTestProjects() {
 			panic(err)
 		}
 	}
+
+	return projects
 }
 
 func deleteTestProjects(argoCDClient IArgoCDClient, projects []*v1alpha1.AppProject) {

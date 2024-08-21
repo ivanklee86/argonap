@@ -51,7 +51,7 @@ func TestRoot(t *testing.T) {
 	})
 
 	t.Run("Run clear command", func(t *testing.T) {
-		client.GenerateTestProjects()
+		appProjects := client.GenerateTestProjects()
 
 		b := bytes.NewBufferString("")
 
@@ -68,10 +68,10 @@ func TestRoot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		appProjects, err := argoCDClient.ListProjects(context.Background())
 		assert.Nil(t, err)
-		for _, appProject := range appProjects.Items {
-			assert.Nil(t, appProject.Spec.SyncWindows)
+		for _, appProject := range appProjects {
+			updatedAppProject, _ := argoCDClient.GetProject(context.TODO(), appProject.Name)
+			assert.Nil(t, updatedAppProject)
 		}
 
 		out, err := io.ReadAll(b)
