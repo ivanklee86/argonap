@@ -19,10 +19,11 @@ type Config struct {
 	DryRun          bool
 	Labels          map[string]string
 	SyncWindowsFile string
+	ExitOnError     bool
 }
 
 // Octanap is the logic/orchestrator.
-type octanap struct {
+type Octanap struct {
 	*Config
 
 	// Client
@@ -35,25 +36,25 @@ type octanap struct {
 }
 
 // New returns a new instance of octanap.
-func New() *octanap {
+func New() *Octanap {
 	config := Config{}
 
-	return &octanap{
+	return &Octanap{
 		Config: &config,
 		Out:    os.Stdout,
 		Err:    os.Stdin,
 	}
 }
 
-func NewWithConfig(config Config) *octanap {
-	return &octanap{
+func NewWithConfig(config Config) *Octanap {
+	return &Octanap{
 		Config: &config,
 		Out:    os.Stdout,
 		Err:    os.Stdin,
 	}
 }
 
-func (o *octanap) Connect() {
+func (o *Octanap) Connect() {
 	clientConfig := client.ArgoCDClientOptions{
 		ServerAddr: o.Config.ServerAddr,
 		Insecure:   o.Config.Insecure,
@@ -61,14 +62,14 @@ func (o *octanap) Connect() {
 	}
 	argocdClient, err := client.New(&clientConfig)
 	if err != nil {
-		o.Error(fmt.Sprintf("Error creating ArgoCD client: %s", err.Error()))
+		o.Error(fmt.Sprintf("Creating ArgoCD client: %s", err.Error()))
 	}
 
 	o.ArgoCDClient = argocdClient
 	o.ArgoCDClientConnected = true
 }
 
-func (o *octanap) ClearSyncWindows() {
+func (o *Octanap) ClearSyncWindows() {
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*TIMEOUT)
 	defer cancel()
 
