@@ -42,15 +42,12 @@ jobs:
         sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
         rm argocd-linux-amd64
     - name: Set up ArgoCD
-      run: task k8s:start
+      run: task services
     - name: Install all dependencies
       run: |
         task go:install-ci
     - name: Run tests.
       run: |
-        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server
-        kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=ingress-nginx
-        task argocd:token
         task go:test-ci
     - name: Lint code.
       run: |
@@ -62,11 +59,10 @@ jobs:
         files: report.xml
     - name: Generate lcov coverage report.
       uses: jandelgado/gcov2lcov-action@v1.0.9
-    - name: Coveralls 
-      uses: coverallsapp/github-action@master
+    - name: Upload results to Codecov
+      uses: codecov/codecov-action@v4
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: coverage.lcov
+        token: ${{ secrets.CODECOV_TOKEN }}
     - name: Save artifacts.
       uses: actions/upload-artifact@v4
       if: always()
