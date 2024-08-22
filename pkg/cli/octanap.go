@@ -47,19 +47,26 @@ func countCharacterOccurrences(s string, c rune) int {
 	return count
 }
 
-// New returns a new instance of octanap.
-func New() *Octanap {
-	config := Config{}
+func labelStringsToMap(labelsAsStrings []string) map[string]string {
+	labels := make(map[string]string)
 
-	for _, labelString := range config.LabelsAsStrings {
+	for _, labelString := range labelsAsStrings {
 		if countCharacterOccurrences(labelString, '=') == 1 {
 			kv := strings.Split(labelString, "=")
 
 			if len(kv) == 2 {
-				config.Labels[kv[0]] = kv[1]
+				labels[kv[0]] = kv[1]
 			}
 		}
 	}
+
+	return labels
+}
+
+// New returns a new instance of octanap.
+func New() *Octanap {
+	config := Config{}
+	config.Labels = labelStringsToMap(config.LabelsAsStrings)
 
 	return &Octanap{
 		Config: &config,
@@ -69,6 +76,8 @@ func New() *Octanap {
 }
 
 func NewWithConfig(config Config) *Octanap {
+	config.Labels = labelStringsToMap(config.LabelsAsStrings)
+
 	return &Octanap{
 		Config: &config,
 		Out:    os.Stdout,

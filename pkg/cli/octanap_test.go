@@ -30,7 +30,7 @@ func TestOctanapHappyPath(t *testing.T) {
 		Insecure:        true,
 		AuthToken:       os.Getenv("ARGOCD_TOKEN"),
 		SyncWindowsFile: "../../integration/exampleSyncWindows.json",
-		LabelsAsStrings: []string{"purpose=test"},
+		LabelsAsStrings: []string{"purpose=tests"},
 	}
 
 	b := bytes.NewBufferString("")
@@ -38,6 +38,12 @@ func TestOctanapHappyPath(t *testing.T) {
 	octanap := NewWithConfig(config)
 	octanap.Out = b
 	octanap.Err = b
+
+	t.Run("Octanap configuration setup", func(t *testing.T) {
+		expectedMap := make(map[string]string)
+		expectedMap["purpose"] = "tests"
+		assert.Equal(t, octanap.Config.Labels, expectedMap)
+	})
 
 	t.Run("Octonap can clear all SyncWindows", func(t *testing.T) {
 		testArgoCDClient := client.CreateTestClient()
