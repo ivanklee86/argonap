@@ -9,7 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func GenerateTestProjects() []*v1alpha1.AppProject {
+func CreateTestClient() IArgoCDClient {
 	err := godotenv.Load("../../.env")
 	if err != nil {
 		panic(err)
@@ -22,12 +22,17 @@ func GenerateTestProjects() []*v1alpha1.AppProject {
 	}
 
 	argoCDClient, _ := New(&clientOptions)
+	return argoCDClient
+}
+
+func GenerateTestProjects() []*v1alpha1.AppProject {
+	testClient := CreateTestClient()
+
 	projects := []*v1alpha1.AppProject{}
 	for range 3 {
-		project, _ := argoCDClient.CreateProject(context.Background(), testhelpers.RandomProjectName())
+		project, _ := testClient.CreateProject(context.Background(), testhelpers.RandomProjectName())
 		projects = append(projects, project)
 	}
-	defer deleteTestProjects(argoCDClient, projects)
 
 	// Set up Project 1 without SyncWindow
 	project1 := projects[0]
@@ -57,7 +62,7 @@ func GenerateTestProjects() []*v1alpha1.AppProject {
 	project3.Labels["department"] = "C"
 
 	for _, project := range projects {
-		_, err := argoCDClient.UpdateProject(context.Background(), *project)
+		_, err := testClient.UpdateProject(context.Background(), *project)
 		if err != nil {
 			panic(err)
 		}
@@ -66,9 +71,11 @@ func GenerateTestProjects() []*v1alpha1.AppProject {
 	return projects
 }
 
-func deleteTestProjects(argoCDClient IArgoCDClient, projects []*v1alpha1.AppProject) {
+func DeleteTestProjects(projects []*v1alpha1.AppProject) {
+	testClient := CreateTestClient()
+
 	for _, project := range projects {
-		_, err := argoCDClient.DeleteProject(context.Background(), project.ObjectMeta.Name)
+		_, err := testClient.DeleteProject(context.Background(), project.ObjectMeta.Name)
 		if err != nil {
 			panic(err)
 		}

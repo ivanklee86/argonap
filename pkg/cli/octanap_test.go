@@ -30,15 +30,17 @@ func TestOctanapHappyPath(t *testing.T) {
 	octanap.Err = b
 
 	t.Run("Octonap can clear all SyncWindows", func(t *testing.T) {
-		client.GenerateTestProjects()
+		testArgoCDClient := client.CreateTestClient()
+		appProjects := client.GenerateTestProjects()
+		defer client.DeleteTestProjects(appProjects)
 
 		octanap.Connect()
 		octanap.ClearSyncWindows()
 
-		appProjects, err := octanap.ArgoCDClient.ListProjects(context.Background())
 		assert.Nil(t, err)
-		for _, appProject := range appProjects.Items {
-			assert.Nil(t, appProject.Spec.SyncWindows)
+		for _, appProject := range appProjects {
+			updatedAppProject, _ := testArgoCDClient.GetProject(context.TODO(), appProject.Name)
+			assert.Nil(t, updatedAppProject.Spec.SyncWindows)
 		}
 	})
 }
