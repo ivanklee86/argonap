@@ -40,6 +40,7 @@ func GenerateTestProjects() []*v1alpha1.AppProject {
 	project1.Labels["team"] = "Jets"
 	project1.Labels["env"] = "prod"
 	project1.Labels["department"] = "A"
+	project1.Labels["purpose"] = "tests"
 
 	// Set up Project 2 with SyncWindow
 	project2 := projects[1]
@@ -47,9 +48,10 @@ func GenerateTestProjects() []*v1alpha1.AppProject {
 	project2.Labels["team"] = "Giants"
 	project2.Labels["env"] = "prod"
 	project2.Labels["department"] = "B"
+	project2.Labels["purpose"] = "tests"
 	project2.Spec.SyncWindows = append(project2.Spec.SyncWindows, &v1alpha1.SyncWindow{
 		Kind:       "allow",
-		Schedule:   "10 1 * * *",
+		Schedule:   "9 1 * * *",
 		Duration:   "1h",
 		Namespaces: []string{"*"},
 	})
@@ -60,6 +62,7 @@ func GenerateTestProjects() []*v1alpha1.AppProject {
 	project3.Labels["team"] = "Eagles"
 	project3.Labels["env"] = "dev"
 	project3.Labels["department"] = "C"
+	project3.Labels["purpose"] = "tests"
 
 	for _, project := range projects {
 		_, err := testClient.UpdateProject(context.Background(), *project)

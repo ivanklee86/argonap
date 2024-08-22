@@ -63,10 +63,41 @@ func TestRoot(t *testing.T) {
 		}
 
 		out, err := io.ReadAll(b)
+		assert.Nil(t, err)
+
+		fmt.Sprintln(string(out))
+	})
+
+	t.Run("Run set command", func(t *testing.T) {
+		testArgoCDClient := client.CreateTestClient()
+		appProjects := client.GenerateTestProjects()
+
+		b := bytes.NewBufferString("")
+
+		command := NewRootCommand()
+		command.SetOut(b)
+		command.SetArgs([]string{
+			"set",
+			"--server-address", "localhost:8080",
+			"--insecure",
+			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
+			"--file", "../../integration/exampleSyncWindows.json",
+			"--label", "purpose=test",
+		})
+		err := command.Execute()
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		fmt.Sprintln(string(out))
+		assert.Nil(t, err)
+		for index, appProject := range appProjects {
+			updatedAppProject, _ := testArgoCDClient.GetProject(context.TODO(), appProject.Name)
+			if index == 1 { // SyncWindow already exists
+				assert.Len(t, updatedAppProject.Spec.SyncWindows, 3)
+			} else {
+				assert.Len(t, updatedAppProject.Spec.SyncWindows, 2)
+			}
+		}
+
 	})
 }

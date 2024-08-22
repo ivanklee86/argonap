@@ -49,11 +49,12 @@ func NewRootCommand() *cobra.Command {
 	}
 
 	cmd.PersistentFlags().StringVar(&octanap.Config.ServerAddr, "server-address", "", "ArgoCD server address")
-	cmd.PersistentFlags().BoolVar(&octanap.Config.Insecure, "insecure", false, "Don't validate SSL certificate on client request.")
+	cmd.PersistentFlags().BoolVar(&octanap.Config.Insecure, "insecure", false, "Don't validate SSL certificate on client request")
 	cmd.PersistentFlags().StringVar(&octanap.Config.AuthToken, "auth-token", "", "JWT Authentication Token")
-	cmd.PersistentFlags().BoolVar(&octanap.Config.ExitOnError, "do-not-exit", false, "Don't exit on errors.")
+	cmd.PersistentFlags().StringSliceVar(&octanap.Config.LabelsAsStrings, "label", []string{}, "Labels to filter projects on in format 'key=value'")
 
 	cmd.AddCommand(NewClearCommand(octanap))
+	cmd.AddCommand(NewSetCommand(octanap))
 
 	return cmd
 }
@@ -68,6 +69,21 @@ func NewClearCommand(octanap *cli.Octanap) *cobra.Command {
 			octanap.ClearSyncWindows()
 		},
 	}
+
+	return cmd
+}
+
+func NewSetCommand(octanap *cli.Octanap) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "set",
+		Short: "Set SyncWindows.",
+		Long:  "Set SyncWindows from file",
+		Run: func(cmd *cobra.Command, args []string) {
+			octanap.Connect()
+			octanap.SetSyncWindows()
+		},
+	}
+	cmd.PersistentFlags().StringVar(&octanap.Config.SyncWindowsFile, "file", "", "Path to file with SyncWindows to configure")
 
 	return cmd
 }
