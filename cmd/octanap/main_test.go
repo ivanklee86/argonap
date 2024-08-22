@@ -9,23 +9,11 @@ import (
 	"testing"
 
 	"github.com/ivanklee86/octanap/pkg/client"
-	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRoot(t *testing.T) {
-	err := godotenv.Load("../../.env")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	clientOptions := client.ArgoCDClientOptions{
-		ServerAddr: "localhost:8080",
-		Insecure:   true,
-		AuthToken:  os.Getenv("ARGOCD_TOKEN"),
-	}
-
-	argoCDClient, err := client.New(&clientOptions)
+	argoCDClient := client.CreateTestClient()
 
 	t.Run("Root command", func(t *testing.T) {
 		b := bytes.NewBufferString("")
@@ -37,7 +25,7 @@ func TestRoot(t *testing.T) {
 			"--insecure",
 			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
 		})
-		err = command.Execute()
+		err := command.Execute()
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -63,7 +51,7 @@ func TestRoot(t *testing.T) {
 			"--insecure",
 			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
 		})
-		err = command.Execute()
+		err := command.Execute()
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -71,7 +59,7 @@ func TestRoot(t *testing.T) {
 		assert.Nil(t, err)
 		for _, appProject := range appProjects {
 			updatedAppProject, _ := argoCDClient.GetProject(context.TODO(), appProject.Name)
-			assert.Nil(t, updatedAppProject)
+			assert.Nil(t, updatedAppProject.Spec.SyncWindows)
 		}
 
 		out, err := io.ReadAll(b)

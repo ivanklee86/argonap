@@ -7,5 +7,7 @@ import (
 )
 
 func TestHelpers(t *testing.T) {
-	assert.Len(t, GenerateTestProjects(), 3)
+	testProjects := GenerateTestProjects()
+	assert.Len(t, testProjects, 3)
+	DeleteTestProjects(testProjects)
 }
