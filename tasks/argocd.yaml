@@ -28,3 +28,9 @@ tasks:
     cmds:
       - task: login
       - ./scripts/template_dotenv.sh
+  
+  clean:
+    desc: "Cleans up projects."
+    cmds:
+      - kubectl get appprojects --no-headers=true | awk /project/'{print $1}' | xargs kubectl delete appprojects
+ 

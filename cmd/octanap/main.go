@@ -51,7 +51,8 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().StringVar(&octanap.Config.ServerAddr, "server-address", "", "ArgoCD server address")
 	cmd.PersistentFlags().BoolVar(&octanap.Config.Insecure, "insecure", false, "Don't validate SSL certificate on client request")
 	cmd.PersistentFlags().StringVar(&octanap.Config.AuthToken, "auth-token", "", "JWT Authentication Token")
-	cmd.PersistentFlags().StringSliceVar(&octanap.Config.LabelsAsStrings, "label", []string{}, "Labels to filter projects on in format 'key=value'")
+	cmd.PersistentFlags().StringVar(&octanap.Config.ProjectName, "name", "", "Project name to update.  If specified, label filtering will not apply.")
+	cmd.PersistentFlags().StringSliceVar(&octanap.Config.LabelsAsStrings, "label", []string{}, "Labels to filter projects on in format 'key=value'.  Can be used multiple times.")
 
 	cmd.AddCommand(NewClearCommand(octanap))
 	cmd.AddCommand(NewSetCommand(octanap))
