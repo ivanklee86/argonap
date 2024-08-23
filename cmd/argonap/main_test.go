@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ivanklee86/octanap/pkg/client"
+	"github.com/ivanklee86/argonap/pkg/client"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -35,7 +35,7 @@ func TestRoot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		assert.Contains(t, string(out), "octanap")
+		assert.Contains(t, string(out), "argonap")
 	})
 
 	t.Run("Run clear command", func(t *testing.T) {

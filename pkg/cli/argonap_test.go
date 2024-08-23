@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ivanklee86/octanap/pkg/client"
+	"github.com/ivanklee86/argonap/pkg/client"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,7 +19,7 @@ func TestCharacterCount(t *testing.T) {
 	})
 }
 
-func TestOctanapHappyPath(t *testing.T) {
+func TestArgonapHappyPath(t *testing.T) {
 	err := godotenv.Load("../../.env")
 	if err != nil {
 		t.Fatal(err)
@@ -35,14 +35,14 @@ func TestOctanapHappyPath(t *testing.T) {
 
 	b := bytes.NewBufferString("")
 
-	octanap := NewWithConfig(config)
-	octanap.Out = b
-	octanap.Err = b
+	argonap := NewWithConfig(config)
+	argonap.Out = b
+	argonap.Err = b
 
-	t.Run("Octanap configuration setup", func(t *testing.T) {
+	t.Run("argonap configuration setup", func(t *testing.T) {
 		expectedMap := make(map[string]string)
 		expectedMap["purpose"] = "tests"
-		assert.Equal(t, octanap.Config.Labels, expectedMap)
+		assert.Equal(t, argonap.Config.Labels, expectedMap)
 	})
 
 	t.Run("Octonap can clear all SyncWindows", func(t *testing.T) {
@@ -50,8 +50,8 @@ func TestOctanapHappyPath(t *testing.T) {
 		appProjects := client.GenerateTestProjects()
 		defer client.DeleteTestProjects(appProjects)
 
-		octanap.Connect()
-		octanap.ClearSyncWindows()
+		argonap.Connect()
+		argonap.ClearSyncWindows()
 
 		assert.Nil(t, err)
 		for _, appProject := range appProjects {
@@ -65,8 +65,8 @@ func TestOctanapHappyPath(t *testing.T) {
 		appProjects := client.GenerateTestProjects()
 		defer client.DeleteTestProjects(appProjects)
 
-		octanap.Connect()
-		octanap.SetSyncWindows()
+		argonap.Connect()
+		argonap.SetSyncWindows()
 
 		assert.Nil(t, err)
 		for index, appProject := range appProjects {

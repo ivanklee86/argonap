@@ -25,14 +25,14 @@ func TestOutputs(t *testing.T) {
 
 	b := bytes.NewBufferString("")
 
-	octanap := NewWithConfig(config)
-	octanap.Out = b
-	octanap.Err = b
+	argonap := NewWithConfig(config)
+	argonap.Out = b
+	argonap.Err = b
 
 	testPhrase := "I'm a little hamster."
 
 	t.Run("outputs string", func(t *testing.T) {
-		octanap.Output(testPhrase)
+		argonap.Output(testPhrase)
 
 		out, err := io.ReadAll(b)
 		if err != nil {
@@ -43,7 +43,7 @@ func TestOutputs(t *testing.T) {
 	})
 
 	t.Run("outputs header", func(t *testing.T) {
-		octanap.OutputHeading(testPhrase)
+		argonap.OutputHeading(testPhrase)
 
 		out, err := io.ReadAll(b)
 		if err != nil {

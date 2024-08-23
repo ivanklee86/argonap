@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	headerPrefix = "octanap"
+	headerPrefix = "argonap"
 )
 
 // printToStream prints a generic message to a stream (stdout/stderror) in color.
@@ -28,16 +28,16 @@ func printToStreamWithColor(stream io.Writer, color text.Color, msg interface{})
 }
 
 // OutputHeading prints a header to stdout.
-func (octanap Octanap) OutputHeading(msg interface{}) {
-	printToStreamWithColor(octanap.Out, text.FgHiCyan, fmt.Sprintf("%v: %v", headerPrefix, msg))
+func (a *Argonap) OutputHeading(msg interface{}) {
+	printToStreamWithColor(a.Out, text.FgHiCyan, fmt.Sprintf("%v: %v", headerPrefix, msg))
 }
 
 // Output prints a normal message to stdout.
-func (octanap Octanap) Output(msg interface{}) {
-	printToStream(octanap.Out, msg)
+func (a *Argonap) Output(msg interface{}) {
+	printToStream(a.Out, msg)
 }
 
 // Error pritns an error to stderr and exits with error code 1.
-func (octanap Octanap) Error(msg interface{}) {
-	printToStreamWithColor(octanap.Err, text.FgHiRed, fmt.Sprintf("Error: %v\n", msg))
+func (a *Argonap) Error(msg interface{}) {
+	printToStreamWithColor(a.Err, text.FgHiRed, fmt.Sprintf("Error: %v\n", msg))
 }
