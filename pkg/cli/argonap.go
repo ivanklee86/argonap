@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
-	"github.com/ivanklee86/octanap/pkg/client"
+	"github.com/ivanklee86/argonap/pkg/client"
 )
 
 const TIMEOUT = 120
@@ -25,8 +25,8 @@ type Config struct {
 	SyncWindowsFile string
 }
 
-// Octanap is the logic/orchestrator.
-type Octanap struct {
+// Argonap is the logic/orchestrator.
+type Argonap struct {
 	*Config
 
 	// Client
@@ -64,101 +64,101 @@ func labelStringsToMap(labelsAsStrings []string) map[string]string {
 	return labels
 }
 
-// New returns a new instance of octanap.
-func New() *Octanap {
+// New returns a new instance of argonap.
+func New() *Argonap {
 	config := Config{}
 	config.Labels = labelStringsToMap(config.LabelsAsStrings)
 
-	return &Octanap{
+	return &Argonap{
 		Config: &config,
 		Out:    os.Stdout,
 		Err:    os.Stdin,
 	}
 }
 
-func NewWithConfig(config Config) *Octanap {
+func NewWithConfig(config Config) *Argonap {
 	config.Labels = labelStringsToMap(config.LabelsAsStrings)
 
-	return &Octanap{
+	return &Argonap{
 		Config: &config,
 		Out:    os.Stdout,
 		Err:    os.Stdin,
 	}
 }
 
-func (o *Octanap) Connect() {
-	if o.Config.ServerAddr == "" {
-		o.Error("ArgoCD server address not set.")
+func (a *Argonap) Connect() {
+	if a.Config.ServerAddr == "" {
+		a.Error("ArgoCD server address not set.")
 	}
 
-	if o.Config.AuthToken == "" {
-		o.Error("ArgoCD JWT auth token is not set.")
+	if a.Config.AuthToken == "" {
+		a.Error("ArgoCD JWT auth token is not set.")
 	}
 
 	clientConfig := client.ArgoCDClientOptions{
-		ServerAddr: o.Config.ServerAddr,
-		Insecure:   o.Config.Insecure,
-		AuthToken:  o.Config.AuthToken,
+		ServerAddr: a.Config.ServerAddr,
+		Insecure:   a.Config.Insecure,
+		AuthToken:  a.Config.AuthToken,
 	}
 	argocdClient, err := client.New(&clientConfig)
 	if err != nil {
-		o.Error(fmt.Sprintf("Creating ArgoCD client: %s", err.Error()))
+		a.Error(fmt.Sprintf("Creating ArgoCD client: %s", err.Error()))
 	}
 
-	o.ArgoCDClient = argocdClient
-	o.ArgoCDClientConnected = true
+	a.ArgoCDClient = argocdClient
+	a.ArgoCDClientConnected = true
 }
 
-func (o *Octanap) ClearSyncWindows() {
+func (a *Argonap) ClearSyncWindows() {
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*TIMEOUT)
 	defer cancel()
 
-	appProjects, err := o.ArgoCDClient.ListProjects(ctxTimeout)
+	appProjects, err := a.ArgoCDClient.ListProjects(ctxTimeout)
 	if err != nil {
-		o.Error(fmt.Sprintf("Error fetching Projects: %s", err.Error()))
+		a.Error(fmt.Sprintf("Error fetching Projects: %s", err.Error()))
 	}
 
-	appProjectsToClear := filterProjects(appProjects, o.Config.ProjectName, o.Config.Labels, true)
+	appProjectsToClear := filterProjects(appProjects, a.Config.ProjectName, a.Config.Labels, true)
 
 	var selectedProjectNames []string
 	for _, p := range appProjectsToClear {
 		selectedProjectNames = append(selectedProjectNames, p.ObjectMeta.Name)
 	}
 
-	o.Output(fmt.Sprintf("%d projects found with SyncWindows: %s", len(appProjectsToClear), strings.Join(selectedProjectNames, ", ")))
+	a.Output(fmt.Sprintf("%d projects found with SyncWindows: %s", len(appProjectsToClear), strings.Join(selectedProjectNames, ", ")))
 
 	for _, appProjectToClear := range appProjectsToClear {
 		appProjectToClear.Spec.SyncWindows = nil
-		_, err := o.ArgoCDClient.UpdateProject(ctxTimeout, appProjectToClear)
+		_, err := a.ArgoCDClient.UpdateProject(ctxTimeout, appProjectToClear)
 
-		o.Output(fmt.Sprintf("Cleared SyncWindows from project %s.", appProjectToClear.ObjectMeta.Name))
+		a.Output(fmt.Sprintf("Cleared SyncWindows from project %s.", appProjectToClear.ObjectMeta.Name))
 		if err != nil {
-			o.Error(fmt.Sprintf("Error updating %s project: %s", appProjectToClear.ObjectMeta.Name, err))
+			a.Error(fmt.Sprintf("Error updating %s project: %s", appProjectToClear.ObjectMeta.Name, err))
 		}
 	}
 }
 
-func (o *Octanap) SetSyncWindows() {
+func (a *Argonap) SetSyncWindows() {
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*TIMEOUT)
 	defer cancel()
 
-	syncWindowsToSet, err := readSyncWindowsFromFile(o.Config.SyncWindowsFile)
+	syncWindowsToSet, err := readSyncWindowsFromFile(a.Config.SyncWindowsFile)
 	if err != nil {
-		o.Error(fmt.Sprintf("Unable to read SyncWindows file. %s", err.Error()))
+		a.Error(fmt.Sprintf("Unable to read SyncWindows file. %s", err.Error()))
 	}
 
-	appProjects, err := o.ArgoCDClient.ListProjects(ctxTimeout)
+	appProjects, err := a.ArgoCDClient.ListProjects(ctxTimeout)
 	if err != nil {
-		o.Error(fmt.Sprintf("Error fetching Projects. %s", err.Error()))
+		a.Error(fmt.Sprintf("Error fetching Projects. %s", err.Error()))
 	}
 
-	appProjectsToUpdate := filterProjects(appProjects, o.Config.ProjectName, o.Config.Labels, false)
+	appProjectsToUpdate := filterProjects(appProjects, a.Config.ProjectName, a.Config.Labels, false)
 
 	var selectedProjectNames []string
 	for _, p := range appProjectsToUpdate {
 		selectedProjectNames = append(selectedProjectNames, p.ObjectMeta.Name)
 	}
-	o.Output(fmt.Sprintf("%d projects found to update: %s", len(appProjectsToUpdate), strings.Join(selectedProjectNames, ", ")))
+	a.Output(fmt.Sprintf("%d projects found to update: %s", len(appProjectsToUpdate), strings.Join(selectedProjectNames, ", ")))
 
 	for _, appProjectToUpdate := range appProjectsToUpdate {
 		var mergedSyncWindows v1alpha1.SyncWindows
@@ -170,12 +170,12 @@ func (o *Octanap) SetSyncWindows() {
 
 		appProjectToUpdate.Spec.SyncWindows = mergedSyncWindows
 
-		_, err := o.ArgoCDClient.UpdateProject(ctxTimeout, appProjectToUpdate)
+		_, err := a.ArgoCDClient.UpdateProject(ctxTimeout, appProjectToUpdate)
 
-		o.Output(fmt.Sprintf("Added SyncWindows to project %s.", appProjectToUpdate.ObjectMeta.Name))
+		a.Output(fmt.Sprintf("Added SyncWindows to project %s.", appProjectToUpdate.ObjectMeta.Name))
 
 		if err != nil {
-			o.Error(fmt.Sprintf("Error updating %s project: %s", appProjectToUpdate.ObjectMeta.Name, err))
+			a.Error(fmt.Sprintf("Error updating %s project: %s", appProjectToUpdate.ObjectMeta.Name, err))
 		}
 	}
 }

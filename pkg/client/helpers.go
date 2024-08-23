@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
-	"github.com/ivanklee86/octanap/pkg/testhelpers"
+	"github.com/ivanklee86/argonap/pkg/testhelpers"
 	"github.com/joho/godotenv"
 )
 

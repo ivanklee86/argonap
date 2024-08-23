@@ -1,4 +1,4 @@
-module github.com/ivanklee86/octanap
+module github.com/ivanklee86/argonap
 
 go 1.22.5
 

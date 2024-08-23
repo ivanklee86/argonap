@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ivanklee86/octanap/pkg/cli"
+	"github.com/ivanklee86/argonap/pkg/cli"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -17,8 +17,8 @@ var (
 )
 
 const (
-	defaultConfigFilename = "octanap"
-	envPrefix             = "OCTANAP"
+	defaultConfigFilename = "argonap"
+	envPrefix             = "ARGONAP"
 )
 
 // main function.
@@ -30,61 +30,61 @@ func main() {
 }
 
 func NewRootCommand() *cobra.Command {
-	octanap := cli.New()
+	argonap := cli.New()
 
 	cmd := &cobra.Command{
-		Use:     "octanap",
+		Use:     "argonap",
 		Short:   "Give ArgoCD a lil' nap.",
 		Long:    "A CLI to provision sync windows at scale.",
 		Version: version,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			octanap.Out = cmd.OutOrStdout()
-			octanap.Err = cmd.ErrOrStderr()
+			argonap.Out = cmd.OutOrStdout()
+			argonap.Err = cmd.ErrOrStderr()
 
 			return initializeConfig(cmd)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Fprint(octanap.Out, cmd.UsageString())
+			fmt.Fprint(argonap.Out, cmd.UsageString())
 		},
 	}
 
-	cmd.PersistentFlags().StringVar(&octanap.Config.ServerAddr, "server-address", "", "ArgoCD server address")
-	cmd.PersistentFlags().BoolVar(&octanap.Config.Insecure, "insecure", false, "Don't validate SSL certificate on client request")
-	cmd.PersistentFlags().StringVar(&octanap.Config.AuthToken, "auth-token", "", "JWT Authentication Token")
-	cmd.PersistentFlags().StringVar(&octanap.Config.ProjectName, "name", "", "Project name to update.  If specified, label filtering will not apply.")
-	cmd.PersistentFlags().StringSliceVar(&octanap.Config.LabelsAsStrings, "label", []string{}, "Labels to filter projects on in format 'key=value'.  Can be used multiple times.")
+	cmd.PersistentFlags().StringVar(&argonap.Config.ServerAddr, "server-address", "", "ArgoCD server address")
+	cmd.PersistentFlags().BoolVar(&argonap.Config.Insecure, "insecure", false, "Don't validate SSL certificate on client request")
+	cmd.PersistentFlags().StringVar(&argonap.Config.AuthToken, "auth-token", "", "JWT Authentication Token")
+	cmd.PersistentFlags().StringVar(&argonap.Config.ProjectName, "name", "", "Project name to update.  If specified, label filtering will not apply.")
+	cmd.PersistentFlags().StringSliceVar(&argonap.Config.LabelsAsStrings, "label", []string{}, "Labels to filter projects on in format 'key=value'.  Can be used multiple times.")
 
-	cmd.AddCommand(NewClearCommand(octanap))
-	cmd.AddCommand(NewSetCommand(octanap))
+	cmd.AddCommand(NewClearCommand(argonap))
+	cmd.AddCommand(NewSetCommand(argonap))
 
 	return cmd
 }
 
-func NewClearCommand(octanap *cli.Octanap) *cobra.Command {
+func NewClearCommand(argonap *cli.argonap) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "clear",
 		Short: "Clear SyncWindows.",
 		Long:  "Clear SyncWindows on all AppProjects.",
 		Run: func(cmd *cobra.Command, args []string) {
-			octanap.Connect()
-			octanap.ClearSyncWindows()
+			argonap.Connect()
+			argonap.ClearSyncWindows()
 		},
 	}
 
 	return cmd
 }
 
-func NewSetCommand(octanap *cli.Octanap) *cobra.Command {
+func NewSetCommand(argonap *cli.argonap) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set",
 		Short: "Set SyncWindows.",
 		Long:  "Set SyncWindows from file",
 		Run: func(cmd *cobra.Command, args []string) {
-			octanap.Connect()
-			octanap.SetSyncWindows()
+			argonap.Connect()
+			argonap.SetSyncWindows()
 		},
 	}
-	cmd.PersistentFlags().StringVar(&octanap.Config.SyncWindowsFile, "file", "", "Path to file with SyncWindows to configure")
+	cmd.PersistentFlags().StringVar(&argonap.Config.SyncWindowsFile, "file", "", "Path to file with SyncWindows to configure")
 
 	return cmd
 }
