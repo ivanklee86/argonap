@@ -49,6 +49,8 @@ jobs:
       run: task services
     - name: Run tests.
       run: task go:test-ci
+    - name: Compile code
+      run: task go:build
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
