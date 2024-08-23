@@ -4,7 +4,7 @@ go 1.22.5
 
 require (
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d
-	github.com/argoproj/argo-cd/v2 v2.12.1
+	github.com/argoproj/argo-cd/v2 v2.12.2
 	github.com/jedib0t/go-pretty/v6 v6.5.9
 	github.com/joho/godotenv v1.5.1
 	github.com/spf13/cobra v1.8.1
