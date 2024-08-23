@@ -1,0 +1,12 @@
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - id: "argonap"
+    main: ./cmd/argonap
+    binary: argonap
+    ldflags:
+      - -X main.version={{.Version}}
+dockers:
+  - image_templates:
+    - "gcr.io/ivanklee86/argonap"

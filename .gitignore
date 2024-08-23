@@ -32,5 +32,6 @@ manifest*.yaml
 .task
 **/**/vendor
 
-# Bin
+# Binaries
 bin
+dist
