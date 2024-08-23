@@ -5,12 +5,16 @@ includes:
   go: ./tasks/go.yaml
   k8s: ./tasks/k8s.yaml
   argocd: ./tasks/argocd.yaml
+  octanap: ./tasks/octanap.yaml
+
+dotenv: ['.env']
 
 tasks:
   default:
     cmds:
       - task: go:fmt
       - task: go:lint
+      - task: go:build
       - task: go:test
 
   services:
