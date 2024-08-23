@@ -110,6 +110,7 @@ func (a *Argonap) Connect() {
 }
 
 func (a *Argonap) ClearSyncWindows() {
+	a.OutputHeading("Clearing SyncWindows on matching AppProjects.")
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*TIMEOUT)
 	defer cancel()
 
@@ -139,6 +140,7 @@ func (a *Argonap) ClearSyncWindows() {
 }
 
 func (a *Argonap) SetSyncWindows() {
+	a.OutputHeading("Setting SyncWindows on matching AppProjects.")
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*TIMEOUT)
 	defer cancel()
 

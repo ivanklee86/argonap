@@ -60,7 +60,7 @@ func NewRootCommand() *cobra.Command {
 	return cmd
 }
 
-func NewClearCommand(argonap *cli.argonap) *cobra.Command {
+func NewClearCommand(argonap *cli.Argonap) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "clear",
 		Short: "Clear SyncWindows.",
@@ -74,7 +74,7 @@ func NewClearCommand(argonap *cli.argonap) *cobra.Command {
 	return cmd
 }
 
-func NewSetCommand(argonap *cli.argonap) *cobra.Command {
+func NewSetCommand(argonap *cli.Argonap) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set",
 		Short: "Set SyncWindows.",

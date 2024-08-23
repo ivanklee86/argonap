@@ -3,16 +3,16 @@
 version: '3'
 
 env:
-  OCTANAP_SERVER_ADDRESS: localhost:8080
-  OCTANAP_INSECURE: true
+  ARGONAP_SERVER_ADDRESS: localhost:8080
+  ARGONAP_INSECURE: true
 
 tasks:
   clear:
-    desc: "Test that Octanap can clear syncWindows."
+    desc: "Test that argonap can clear syncWindows."
     cmds:
-      - ./bin/octanap clear --auth-token ${ARGOCD_TOKEN}
+      - ./bin/argonap clear --auth-token ${ARGOCD_TOKEN}
   
   set:
     desc: "Set syncWindows."
     cmds:
-      - ./bin/octanap set --auth-token ${ARGOCD_TOKEN} --file ./integration/exampleSyncWindows.json
+      - ./bin/argonap set --auth-token ${ARGOCD_TOKEN} --file ./integration/exampleSyncWindows.json
