@@ -19,6 +19,7 @@ type Config struct {
 	Insecure        bool
 	AuthToken       string
 	DryRun          bool
+	ProjectName     string
 	LabelsAsStrings []string
 	Labels          map[string]string
 	SyncWindowsFile string
@@ -109,11 +110,20 @@ func (o *Octanap) ClearSyncWindows() {
 		o.Error(fmt.Sprintf("Error fetching Projects: %s", err.Error()))
 	}
 
-	appProjectsToClear := filterProjects(appProjects, o.Config.Labels, true)
+	appProjectsToClear := filterProjects(appProjects, o.Config.ProjectName, o.Config.Labels, true)
+
+	var selectedProjectNames []string
+	for _, p := range appProjectsToClear {
+		selectedProjectNames = append(selectedProjectNames, p.ObjectMeta.Name)
+	}
+
+	o.Output(fmt.Sprintf("%d projects found with SyncWindows: %s", len(appProjectsToClear), strings.Join(selectedProjectNames, ", ")))
 
 	for _, appProjectToClear := range appProjectsToClear {
 		appProjectToClear.Spec.SyncWindows = nil
 		_, err := o.ArgoCDClient.UpdateProject(ctxTimeout, appProjectToClear)
+
+		o.Output(fmt.Sprintf("Cleared SyncWindows from project %s.", appProjectToClear.ObjectMeta.Name))
 		if err != nil {
 			o.Error(fmt.Sprintf("Error updating %s project: %s", appProjectToClear.ObjectMeta.Name, err))
 		}
@@ -134,7 +144,7 @@ func (o *Octanap) SetSyncWindows() {
 		o.Error(fmt.Sprintf("Error fetching Projects. %s", err.Error()))
 	}
 
-	appProjectsToUpdate := filterProjects(appProjects, o.Config.Labels, false)
+	appProjectsToUpdate := filterProjects(appProjects, o.Config.ProjectName, o.Config.Labels, false)
 	for _, appProjectToUpdate := range appProjectsToUpdate {
 		var mergedSyncWindows v1alpha1.SyncWindows
 
