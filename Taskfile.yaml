@@ -18,7 +18,13 @@ tasks:
       - task: go:test
 
   services:
+    desc: "Set up services (aka ArgoCD) to use for tests."
     cmds:
       - task: k8s:start
       - task: argocd:healthcheck
       - task: argocd:token
+
+  devcontainer:
+    desc: "Test devcontainer changes"
+    cmds:
+      - docker build -t devcontainer -f ./.devcontainer/Dockerfile .
