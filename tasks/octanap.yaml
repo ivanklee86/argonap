@@ -11,3 +11,8 @@ tasks:
     desc: "Test that Octanap can clear syncWindows."
     cmds:
       - ./bin/octanap clear --auth-token ${ARGOCD_TOKEN}
+  
+  set:
+    desc: "Set syncWindows."
+    cmds:
+      - ./bin/octanap set --auth-token ${ARGOCD_TOKEN} --file ./integration/exampleSyncWindows.json

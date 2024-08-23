@@ -87,6 +87,14 @@ func NewWithConfig(config Config) *Octanap {
 }
 
 func (o *Octanap) Connect() {
+	if o.Config.ServerAddr == "" {
+		o.Error("ArgoCD server address not set.")
+	}
+
+	if o.Config.AuthToken == "" {
+		o.Error("ArgoCD JWT auth token is not set.")
+	}
+
 	clientConfig := client.ArgoCDClientOptions{
 		ServerAddr: o.Config.ServerAddr,
 		Insecure:   o.Config.Insecure,
@@ -145,6 +153,13 @@ func (o *Octanap) SetSyncWindows() {
 	}
 
 	appProjectsToUpdate := filterProjects(appProjects, o.Config.ProjectName, o.Config.Labels, false)
+
+	var selectedProjectNames []string
+	for _, p := range appProjectsToUpdate {
+		selectedProjectNames = append(selectedProjectNames, p.ObjectMeta.Name)
+	}
+	o.Output(fmt.Sprintf("%d projects found to update: %s", len(appProjectsToUpdate), strings.Join(selectedProjectNames, ", ")))
+
 	for _, appProjectToUpdate := range appProjectsToUpdate {
 		var mergedSyncWindows v1alpha1.SyncWindows
 
@@ -156,6 +171,9 @@ func (o *Octanap) SetSyncWindows() {
 		appProjectToUpdate.Spec.SyncWindows = mergedSyncWindows
 
 		_, err := o.ArgoCDClient.UpdateProject(ctxTimeout, appProjectToUpdate)
+
+		o.Output(fmt.Sprintf("Added SyncWindows to project %s.", appProjectToUpdate.ObjectMeta.Name))
+
 		if err != nil {
 			o.Error(fmt.Sprintf("Error updating %s project: %s", appProjectToUpdate.ObjectMeta.Name, err))
 		}
