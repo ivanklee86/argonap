@@ -4,4 +4,4 @@ metadata:
   name: example-cm
 data:
   foo: "bar"
-  hamsters: "yes"
+  hamsters: "no"
