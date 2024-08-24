@@ -8,6 +8,8 @@ builds:
     binary: argonap
     ldflags:
       - -X main.version={{.Version}}
+changelog:
+  disable: true
 dockers:
   - image_templates:
-    - "gcr.io/ivanklee86/argonap"
+    - "ghcr.io/ivanklee86/argonap"
