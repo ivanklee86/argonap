@@ -1,5 +1,5 @@
 {
-	"name": "fullstack",
+	"name": "argonap",
 	"build": {
 		"dockerfile": "Dockerfile",
 		"context": "..",
@@ -7,7 +7,7 @@
 			// Update 'VARIANT' to pick a Golang version
 			// Append -bullseye or -buster to pin to an OS version.
 			// Use -bullseye variants on local on arm64/Apple Silicon.
-			"VARIANT": "1.22",
+			"VARIANT": "1.23",
 
 			// Choose node version or none to skip.
 			"NODE_VERSION": "none"
