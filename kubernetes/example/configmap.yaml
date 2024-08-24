@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: example-cm
 data:
-  foo: bar
-  hamsters: yes
+  foo: "bar"
+  hamsters: "yes"
