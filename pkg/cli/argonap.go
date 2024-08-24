@@ -128,9 +128,14 @@ func (a *Argonap) ClearSyncWindows() {
 
 	a.Output(fmt.Sprintf("%d projects found with SyncWindows: %s", len(appProjectsToClear), strings.Join(selectedProjectNames, ", ")))
 
-	for _, appProjectToClear := range appProjectsToClear {
+	for _, selectedAppProject := range appProjectsToClear {
+		appProjectToClear, err := a.ArgoCDClient.GetProject(ctxTimeout, selectedAppProject.ObjectMeta.Name)
+		if err != nil {
+			a.Error(fmt.Sprintf("Error refreshing %s project: %s", selectedAppProject.ObjectMeta.Name, err))
+		}
+
 		appProjectToClear.Spec.SyncWindows = nil
-		_, err := a.ArgoCDClient.UpdateProject(ctxTimeout, appProjectToClear)
+		_, err = a.ArgoCDClient.UpdateProject(ctxTimeout, *appProjectToClear)
 
 		a.Output(fmt.Sprintf("Cleared SyncWindows from project %s.", appProjectToClear.ObjectMeta.Name))
 		if err != nil {
@@ -162,7 +167,12 @@ func (a *Argonap) SetSyncWindows() {
 	}
 	a.Output(fmt.Sprintf("%d projects found to update: %s", len(appProjectsToUpdate), strings.Join(selectedProjectNames, ", ")))
 
-	for _, appProjectToUpdate := range appProjectsToUpdate {
+	for _, selectedAppProject := range appProjectsToUpdate {
+		appProjectToUpdate, err := a.ArgoCDClient.GetProject(ctxTimeout, selectedAppProject.ObjectMeta.Name)
+		if err != nil {
+			a.Error(fmt.Sprintf("Error refreshing %s project: %s", selectedAppProject.ObjectMeta.Name, err))
+		}
+
 		var mergedSyncWindows v1alpha1.SyncWindows
 
 		mergedSyncWindows = appProjectToUpdate.Spec.SyncWindows
@@ -172,10 +182,8 @@ func (a *Argonap) SetSyncWindows() {
 
 		appProjectToUpdate.Spec.SyncWindows = mergedSyncWindows
 
-		_, err := a.ArgoCDClient.UpdateProject(ctxTimeout, appProjectToUpdate)
-
+		_, err = a.ArgoCDClient.UpdateProject(ctxTimeout, *appProjectToUpdate)
 		a.Output(fmt.Sprintf("Added SyncWindows to project %s.", appProjectToUpdate.ObjectMeta.Name))
-
 		if err != nil {
 			a.Error(fmt.Sprintf("Error updating %s project: %s", appProjectToUpdate.ObjectMeta.Name, err))
 		}
