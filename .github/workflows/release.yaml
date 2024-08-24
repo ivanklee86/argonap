@@ -8,8 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
 
-permissions:
-  contents: write
+permissions: write-all
 
 jobs:
   goreleaser:
