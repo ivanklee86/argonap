@@ -5,6 +5,9 @@ on:
     tags:
       - '*'
 
+env:
+  REGISTRY: ghcr.io
+
 permissions:
   contents: write
 
