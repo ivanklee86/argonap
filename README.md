@@ -39,6 +39,7 @@ configs:
 
   rbac:
     policy.csv: |
+      p, role:argonap, projects, get, *, allow
       p, argonap, projects, update, *, allow
       g, YOUR_ACCOUNT_NAME, role:argonap
 ```
