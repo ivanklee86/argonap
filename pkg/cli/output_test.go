@@ -35,10 +35,7 @@ func TestOutputs(t *testing.T) {
 		argonap.Output(testPhrase)
 
 		out, err := io.ReadAll(b)
-		if err != nil {
-			t.Fatal(err)
-		}
-
+		assert.Nil(t, err)
 		assert.Equal(t, testPhrase+"\n", string(out))
 	})
 
@@ -46,10 +43,7 @@ func TestOutputs(t *testing.T) {
 		argonap.OutputHeading(testPhrase)
 
 		out, err := io.ReadAll(b)
-		if err != nil {
-			t.Fatal(err)
-		}
-
+		assert.Nil(t, err)
 		assert.Contains(t, stripansi.Strip(string(out)), testPhrase)
 	})
 }
