@@ -13,3 +13,11 @@ changelog:
 dockers:
   - image_templates:
     - "ghcr.io/ivanklee86/argonap"
+brews:
+  - name: argonap
+    homepage: "https://github.com/ivanklee86/argonap"
+    description: "A CLI to configure/clear SyncWindows on ArgoCD projects."
+    repository:
+      owner: ivanklee86
+      name: homebrew-tap
+      token: "{{ .Env.GITHUB_HOMBREW_AUTH_TOKEN }}"

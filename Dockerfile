@@ -1,3 +1,4 @@
-FROM alpine
-ENTRYPOINT ["argonap"]
+FROM scratch
+
+ENTRYPOINT ["/bin/argonap"]
 COPY argonap /bin
