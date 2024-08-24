@@ -1,4 +1,4 @@
-FROM scratch
+FROM debian:bookworm-slim
 
-ENTRYPOINT ["/argonap"]
-COPY argonap /
+ENTRYPOINT ["/bin/argonap"]
+COPY /bin/argonap /bin
