@@ -1,4 +1,4 @@
 FROM scratch
 
-ENTRYPOINT ["/bin/argonap"]
-COPY argonap /bin
+ENTRYPOINT ["/argonap"]
+COPY argonap /

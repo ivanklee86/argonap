@@ -17,6 +17,7 @@ brews:
   - name: argonap
     homepage: "https://github.com/ivanklee86/argonap"
     description: "A CLI to configure/clear SyncWindows on ArgoCD projects."
+    directory: Formula
     repository:
       owner: ivanklee86
       name: homebrew-tap
