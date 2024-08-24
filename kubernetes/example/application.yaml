@@ -1,0 +1,13 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: test
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ivanklee86/argonap.git
+    path: kubernetes/example/manifests
+    targetRevision: poc
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
