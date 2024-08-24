@@ -52,9 +52,7 @@ func TestRoot(t *testing.T) {
 			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
 		})
 		err := command.Execute()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
 
 		assert.Nil(t, err)
 		for _, appProject := range appProjects {
@@ -85,9 +83,7 @@ func TestRoot(t *testing.T) {
 			"--label", "purpose=test",
 		})
 		err := command.Execute()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
 
 		assert.Nil(t, err)
 		for index, appProject := range appProjects {
