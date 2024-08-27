@@ -13,7 +13,7 @@ ArgoCD [SyncWindows](https://argo-cd.readthedocs.io/en/stable/user-guide/sync_wi
 - Emergencies where you just want to run lots and lots of `kubectl` commands
 - Some (or all) of the above!🤣
 
-`argonap` allows you to create and clear SyncWindows across multiple partners from the comfort of the command line.
+`argonap` allows you to create and clear SyncWindows across multiple projects from the comfort of the command line.
 
 ## Installation
 
