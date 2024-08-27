@@ -32,5 +32,5 @@ tasks:
   clean:
     desc: "Cleans up projects."
     cmds:
-      - kubectl get appprojects --no-headers=true | awk /project/'{print $1}' | xargs kubectl delete appprojects
+      - kubectl get appprojects --no-headers=true | awk /project/'{print $1}' | xargs kubectl delete appprojects || true
  

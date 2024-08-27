@@ -40,6 +40,7 @@ func TestRoot(t *testing.T) {
 
 	t.Run("Run clear command", func(t *testing.T) {
 		appProjects := client.GenerateTestProjects()
+		defer client.DeleteTestProjects(appProjects)
 
 		b := bytes.NewBufferString("")
 
@@ -69,6 +70,7 @@ func TestRoot(t *testing.T) {
 	t.Run("Run set command", func(t *testing.T) {
 		testArgoCDClient := client.CreateTestClient()
 		appProjects := client.GenerateTestProjects()
+		defer client.DeleteTestProjects(appProjects)
 
 		b := bytes.NewBufferString("")
 
