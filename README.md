@@ -19,7 +19,7 @@ ArgoCD [SyncWindows](https://argo-cd.readthedocs.io/en/stable/user-guide/sync_wi
 
 ### Homebrew
 ```sh
-brew tap ivanklee86/hombrew-tap
+brew tap ivanklee86/homebrew-tap
 brew install ivanklee86/tap/argonap
 ```
 
