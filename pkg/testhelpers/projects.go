@@ -13,12 +13,12 @@ func RandomProjectName() string {
 	const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
 	seed := rand.NewSource(time.Now().UnixNano())
 	random := rand.New(seed)
-	length := 5
+	length := 10
 
 	randomString := make([]byte, length)
 	for i := range randomString {
 		randomString[i] = charset[random.Intn(len(charset))]
 	}
 
-	return fmt.Sprintf("project%s", string(randomString))
+	return fmt.Sprintf("pr%s", string(randomString))
 }

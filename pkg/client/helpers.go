@@ -30,7 +30,10 @@ func GenerateTestProjects() []*v1alpha1.AppProject {
 
 	projects := []*v1alpha1.AppProject{}
 	for range 3 {
-		project, _ := testClient.CreateProject(context.Background(), testhelpers.RandomProjectName())
+		project, err := testClient.CreateProject(context.Background(), testhelpers.RandomProjectName())
+		if err != nil {
+			panic(err)
+		}
 		projects = append(projects, project)
 	}
 
