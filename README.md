@@ -28,6 +28,11 @@ brew install ivanklee86/tap/argonap
 docker run -it --rm ghcr.io/ivanklee86/argonap:latest
 ```
 
+### Go
+```sh
+go install github.com/ivanklee86/argonap@latest
+```
+
 ## Authentication
 
 `argonap` uses a JWT to authenticate to ArgoCD.  This can be configured in the Helm chartas follows:

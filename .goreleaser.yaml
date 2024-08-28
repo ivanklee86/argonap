@@ -4,7 +4,6 @@ before:
     - go mod tidy
 builds:
   - id: "argonap"
-    main: ./cmd/argonap
     binary: argonap
     ldflags:
       - -X main.version={{.Version}}
