@@ -28,6 +28,11 @@ brew install ivanklee86/tap/argonap
 docker run -it --rm ghcr.io/ivanklee86/argonap:latest
 ```
 
+### Go
+```sh
+go install github.com/ivanklee86/argonap@latest
+```
+
 ## Authentication
 
 `argonap` uses a JWT to authenticate to ArgoCD.  This can be configured in the Helm chartas follows:
@@ -50,11 +55,15 @@ argocd login # Using username/password or SSO
 argocd account generate-token --account YOUR_ACCOUNT
 ```
 
+`argonap` flags can be set via environment variables with the format `ARGONAP_[flag but replace - with _]` e.g. `ARGONAP_AUTH_TOKEN`.  This allows you to store the auth token securely and pass it to the CLI using your favorite local secrets solution (e.g. [1Password CLI](https://developer.1password.com/docs/cli/secret-references))
+
 ## Selection
 
 Projects can be selected by the following CLI options:
 - `--name` will cause `argonap` to only make changes to the target AppProject.
 - `--label` will only select AppProjects where all labels are matched.  Labels should be in format `key=value` and be supplied multiple times.
+
+Passing no options will run the command on all projects.
 
 ## Usage
 

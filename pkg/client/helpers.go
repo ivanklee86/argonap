@@ -9,8 +9,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func CreateTestClient() IArgoCDClient {
-	err := godotenv.Load("../../.env")
+func CreateTestClient(envFilePath string) IArgoCDClient {
+	err := godotenv.Load(envFilePath)
 	if err != nil {
 		panic(err)
 	}
@@ -25,8 +25,8 @@ func CreateTestClient() IArgoCDClient {
 	return argoCDClient
 }
 
-func GenerateTestProjects() []*v1alpha1.AppProject {
-	testClient := CreateTestClient()
+func GenerateTestProjects(envFilePath string) []*v1alpha1.AppProject {
+	testClient := CreateTestClient(envFilePath)
 
 	projects := []*v1alpha1.AppProject{}
 	for range 3 {
@@ -77,8 +77,8 @@ func GenerateTestProjects() []*v1alpha1.AppProject {
 	return projects
 }
 
-func DeleteTestProjects(projects []*v1alpha1.AppProject) {
-	testClient := CreateTestClient()
+func DeleteTestProjects(projects []*v1alpha1.AppProject, envFilePath string) {
+	testClient := CreateTestClient(envFilePath)
 
 	for _, project := range projects {
 		_, err := testClient.DeleteProject(context.Background(), project.ObjectMeta.Name)

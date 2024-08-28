@@ -13,7 +13,7 @@ import (
 )
 
 func TestRoot(t *testing.T) {
-	argoCDClient := client.CreateTestClient()
+	argoCDClient := client.CreateTestClient("./.env")
 
 	t.Run("Root command", func(t *testing.T) {
 		b := bytes.NewBufferString("")
@@ -39,8 +39,8 @@ func TestRoot(t *testing.T) {
 	})
 
 	t.Run("Run clear command", func(t *testing.T) {
-		appProjects := client.GenerateTestProjects()
-		defer client.DeleteTestProjects(appProjects)
+		appProjects := client.GenerateTestProjects("./.env")
+		defer client.DeleteTestProjects(appProjects, "./.env")
 
 		b := bytes.NewBufferString("")
 
@@ -68,9 +68,8 @@ func TestRoot(t *testing.T) {
 	})
 
 	t.Run("Run set command", func(t *testing.T) {
-		testArgoCDClient := client.CreateTestClient()
-		appProjects := client.GenerateTestProjects()
-		defer client.DeleteTestProjects(appProjects)
+		appProjects := client.GenerateTestProjects("./.env")
+		defer client.DeleteTestProjects(appProjects, "./.env")
 
 		b := bytes.NewBufferString("")
 
@@ -81,7 +80,7 @@ func TestRoot(t *testing.T) {
 			"--server-address", "localhost:8080",
 			"--insecure",
 			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
-			"--file", "../../integration/exampleSyncWindows.json",
+			"--file", "./integration/exampleSyncWindows.json",
 			"--label", "purpose=test",
 		})
 		err := command.Execute()
@@ -89,7 +88,7 @@ func TestRoot(t *testing.T) {
 
 		assert.Nil(t, err)
 		for index, appProject := range appProjects {
-			updatedAppProject, _ := testArgoCDClient.GetProject(context.TODO(), appProject.Name)
+			updatedAppProject, _ := argoCDClient.GetProject(context.TODO(), appProject.Name)
 			if index == 1 { // SyncWindow already exists
 				assert.Len(t, updatedAppProject.Spec.SyncWindows, 3)
 			} else {
