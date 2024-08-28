@@ -46,9 +46,9 @@ func TestArgonapHappyPath(t *testing.T) {
 	})
 
 	t.Run("Octonap can clear all SyncWindows", func(t *testing.T) {
-		testArgoCDClient := client.CreateTestClient()
-		appProjects := client.GenerateTestProjects()
-		defer client.DeleteTestProjects(appProjects)
+		testArgoCDClient := client.CreateTestClient("../../.env")
+		appProjects := client.GenerateTestProjects("../../.env")
+		defer client.DeleteTestProjects(appProjects, "../../.env")
 
 		argonap.Connect()
 		argonap.ClearSyncWindows()
@@ -61,9 +61,9 @@ func TestArgonapHappyPath(t *testing.T) {
 	})
 
 	t.Run("Octonap can clear set SyncWindows", func(t *testing.T) {
-		testArgoCDClient := client.CreateTestClient()
-		appProjects := client.GenerateTestProjects()
-		defer client.DeleteTestProjects(appProjects)
+		testArgoCDClient := client.CreateTestClient("../../.env")
+		appProjects := client.GenerateTestProjects("../../.env")
+		defer client.DeleteTestProjects(appProjects, "../../.env")
 
 		argonap.Connect()
 		argonap.SetSyncWindows()

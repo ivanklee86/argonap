@@ -7,7 +7,7 @@ import (
 )
 
 func TestHelpers(t *testing.T) {
-	testProjects := GenerateTestProjects()
+	testProjects := GenerateTestProjects("../../.env")
 	assert.Len(t, testProjects, 3)
-	DeleteTestProjects(testProjects)
+	DeleteTestProjects(testProjects, "../../.env")
 }
