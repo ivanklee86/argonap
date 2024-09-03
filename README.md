@@ -100,6 +100,7 @@ Global Flags:
       --label strings           Labels to filter projects on in format 'key=value'.  Can be used multiple times.
       --name string             Project name to update.  If specified, label filtering will not apply.
       --server-address string   ArgoCD server address
+      --timeout int             Context timeout in seconds. (default 240)
 ```
 
 ### `clear`
@@ -123,4 +124,5 @@ Global Flags:
       --label strings           Labels to filter projects on in format 'key=value'.  Can be used multiple times.
       --name string             Project name to update.  If specified, label filtering will not apply.
       --server-address string   ArgoCD server address
+      --timeout int             Context timeout in seconds. (default 240)
 ```
