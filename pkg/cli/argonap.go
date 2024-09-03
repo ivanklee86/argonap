@@ -116,7 +116,7 @@ func (a *Argonap) Connect() {
 
 func (a *Argonap) ClearSyncWindows() {
 	a.OutputHeading("Clearing SyncWindows on matching AppProjects.")
-	ctxTimeout, cancel := context.WithTimeout(context.Background(), git)
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Duration(a.Config.Timeout)*time.Second)
 	defer cancel()
 
 	appProjects, err := a.ArgoCDClient.ListProjects(ctxTimeout)
