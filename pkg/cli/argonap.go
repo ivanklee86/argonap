@@ -23,6 +23,7 @@ type Config struct {
 	LabelsAsStrings []string
 	Labels          map[string]string
 	SyncWindowsFile string
+	Timeout         int
 }
 
 // Argonap is the logic/orchestrator.
@@ -69,6 +70,10 @@ func New() *Argonap {
 	config := Config{}
 	config.Labels = labelStringsToMap(config.LabelsAsStrings)
 
+	if config.Timeout == 0 {
+		config.Timeout = 240 // Set default for tests, etc.
+	}
+
 	return &Argonap{
 		Config: &config,
 		Out:    os.Stdout,
@@ -111,7 +116,7 @@ func (a *Argonap) Connect() {
 
 func (a *Argonap) ClearSyncWindows() {
 	a.OutputHeading("Clearing SyncWindows on matching AppProjects.")
-	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*TIMEOUT)
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Duration(a.Config.Timeout)*time.Second)
 	defer cancel()
 
 	appProjects, err := a.ArgoCDClient.ListProjects(ctxTimeout)
@@ -146,7 +151,7 @@ func (a *Argonap) ClearSyncWindows() {
 
 func (a *Argonap) SetSyncWindows() {
 	a.OutputHeading("Setting SyncWindows on matching AppProjects.")
-	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*TIMEOUT)
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Duration(a.Config.Timeout)*time.Second)
 	defer cancel()
 
 	syncWindowsToSet, err := readSyncWindowsFromFile(a.Config.SyncWindowsFile)

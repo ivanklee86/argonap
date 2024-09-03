@@ -53,6 +53,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().StringVar(&argonap.Config.AuthToken, "auth-token", "", "JWT Authentication Token")
 	cmd.PersistentFlags().StringVar(&argonap.Config.ProjectName, "name", "", "Project name to update.  If specified, label filtering will not apply.")
 	cmd.PersistentFlags().StringSliceVar(&argonap.Config.LabelsAsStrings, "label", []string{}, "Labels to filter projects on in format 'key=value'.  Can be used multiple times.")
+	cmd.PersistentFlags().IntVar(&argonap.Config.Timeout, "timeout", 240, "Context timeout in seconds.")
 
 	cmd.AddCommand(NewClearCommand(argonap))
 	cmd.AddCommand(NewSetCommand(argonap))

@@ -31,6 +31,7 @@ func TestArgonapHappyPath(t *testing.T) {
 		AuthToken:       os.Getenv("ARGOCD_TOKEN"),
 		SyncWindowsFile: "../../integration/exampleSyncWindows.json",
 		LabelsAsStrings: []string{"purpose=tests"},
+		Timeout:         240,
 	}
 
 	b := bytes.NewBufferString("")
