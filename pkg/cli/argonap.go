@@ -10,6 +10,7 @@ import (
 
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/ivanklee86/argonap/pkg/client"
+	"github.com/jedib0t/go-pretty/v6/list"
 )
 
 const TIMEOUT = 120
@@ -63,6 +64,16 @@ func labelStringsToMap(labelsAsStrings []string) map[string]string {
 	}
 
 	return labels
+}
+
+func displayFilteredProjects(projects *[]v1alpha1.AppProject) string {
+	l := list.NewWriter()
+	l.SetStyle(list.StyleBulletCircle)
+	for _, p := range *projects {
+		l.AppendItem(p.ObjectMeta.Name)
+	}
+	
+	return l.Render()
 }
 
 // New returns a new instance of argonap.
@@ -126,12 +137,8 @@ func (a *Argonap) ClearSyncWindows() {
 
 	appProjectsToClear := filterProjects(appProjects, a.Config.ProjectName, a.Config.Labels, true)
 
-	var selectedProjectNames []string
-	for _, p := range appProjectsToClear {
-		selectedProjectNames = append(selectedProjectNames, p.ObjectMeta.Name)
-	}
-
-	a.Output(fmt.Sprintf("%d projects found with SyncWindows: %s", len(appProjectsToClear), strings.Join(selectedProjectNames, ", ")))
+	a.Output(fmt.Sprintf("%d projects found with SyncWindows.", len(appProjectsToClear)))
+	a.Output(displayFilteredProjects(&appProjectsToClear))
 
 	for _, selectedAppProject := range appProjectsToClear {
 		appProjectToClear, err := a.ArgoCDClient.GetProject(ctxTimeout, selectedAppProject.ObjectMeta.Name)
@@ -166,11 +173,8 @@ func (a *Argonap) SetSyncWindows() {
 
 	appProjectsToUpdate := filterProjects(appProjects, a.Config.ProjectName, a.Config.Labels, false)
 
-	var selectedProjectNames []string
-	for _, p := range appProjectsToUpdate {
-		selectedProjectNames = append(selectedProjectNames, p.ObjectMeta.Name)
-	}
-	a.Output(fmt.Sprintf("%d projects found to update: %s", len(appProjectsToUpdate), strings.Join(selectedProjectNames, ", ")))
+	a.Output(fmt.Sprintf("%d projects found to update,", len(appProjectsToUpdate)))
+	a.Output(displayFilteredProjects(&appProjectsToUpdate))
 
 	for _, selectedAppProject := range appProjectsToUpdate {
 		appProjectToUpdate, err := a.ArgoCDClient.GetProject(ctxTimeout, selectedAppProject.ObjectMeta.Name)
