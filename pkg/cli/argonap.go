@@ -72,7 +72,7 @@ func displayFilteredProjects(projects *[]v1alpha1.AppProject) string {
 	for _, p := range *projects {
 		l.AppendItem(p.ObjectMeta.Name)
 	}
-	
+
 	return l.Render()
 }
 
