@@ -19,7 +19,6 @@ tasks:
     desc: Install packages and CI/CD tools.
     cmds:
       - task: install
-      - go install github.com/jstemmer/go-junit-report/v2@latest
       - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
       - go install github.com/hairyhenderson/gomplate/v4/cmd/gomplate@latest
   
@@ -47,5 +46,5 @@ tasks:
   test-ci:
     desc: Run Golang tests and generate coverage report.
     cmds:
-      - go test --coverprofile {{.COVERAGE_RAW}} -v ./... 2>&1  | go-junit-report > report.xml
+      - go test --coverprofile {{.COVERAGE_RAW}} -v ./... 2>&1
       - go tool cover -html={{.COVERAGE_RAW}} -o {{.COVERAGE_REPORT}}
