@@ -59,9 +59,9 @@ argocd account generate-token --account YOUR_ACCOUNT
 
 ## Selection
 
-Projects can be selected by the following CLI options:
-- `--name` will cause `argonap` to only make changes to the target AppProject.
-- `--label` will only select AppProjects where all labels are matched.  Labels should be in format `key=value` and be supplied multiple times.
+Projects can be selected by the following CLI flags.  Flags can be used multiple times.
+- `--name` will cause `argonap` to only make changes to the target AppProject(s).
+- `--label` will only select AppProjects where all labels are matched.  Labels should be in format `key=value`.  Using this flag multiple times will select projects that match all specified labels.
 
 Passing no options will run the command on all projects.
 
