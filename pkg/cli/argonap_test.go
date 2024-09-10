@@ -32,6 +32,7 @@ func TestArgonapHappyPath(t *testing.T) {
 		SyncWindowsFile: "../../integration/exampleSyncWindows.json",
 		LabelsAsStrings: []string{"purpose=tests"},
 		Timeout:         240,
+		Workers:         4,
 	}
 
 	b := bytes.NewBufferString("")
@@ -46,7 +47,7 @@ func TestArgonapHappyPath(t *testing.T) {
 		assert.Equal(t, argonap.Config.Labels, expectedMap)
 	})
 
-	t.Run("Octonap can clear all SyncWindows", func(t *testing.T) {
+	t.Run("argonap can clear all SyncWindows", func(t *testing.T) {
 		testArgoCDClient := client.CreateTestClient("../../.env")
 		appProjects := client.GenerateTestProjects("../../.env")
 		defer client.DeleteTestProjects(appProjects, "../../.env")
@@ -56,12 +57,12 @@ func TestArgonapHappyPath(t *testing.T) {
 
 		assert.Nil(t, err)
 		for _, appProject := range appProjects {
-			updatedAppProject, _ := testArgoCDClient.GetProject(context.TODO(), appProject.Name)
+			updatedAppProject, _ := testArgoCDClient.GetProject(context.Background(), appProject.Name)
 			assert.Nil(t, updatedAppProject.Spec.SyncWindows)
 		}
 	})
 
-	t.Run("Octonap can clear set SyncWindows", func(t *testing.T) {
+	t.Run("argonap can set SyncWindows", func(t *testing.T) {
 		testArgoCDClient := client.CreateTestClient("../../.env")
 		appProjects := client.GenerateTestProjects("../../.env")
 		defer client.DeleteTestProjects(appProjects, "../../.env")
@@ -71,7 +72,7 @@ func TestArgonapHappyPath(t *testing.T) {
 
 		assert.Nil(t, err)
 		for index, appProject := range appProjects {
-			updatedAppProject, _ := testArgoCDClient.GetProject(context.TODO(), appProject.Name)
+			updatedAppProject, _ := testArgoCDClient.GetProject(context.Background(), appProject.Name)
 			if index == 1 { // SyncWindow already exists
 				assert.Len(t, updatedAppProject.Spec.SyncWindows, 3)
 			} else {

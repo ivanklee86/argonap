@@ -10,6 +10,7 @@ import (
 
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/ivanklee86/argonap/pkg/client"
+	"github.com/jedib0t/go-pretty/v6/list"
 )
 
 const TIMEOUT = 120
@@ -19,11 +20,12 @@ type Config struct {
 	Insecure        bool
 	AuthToken       string
 	DryRun          bool
-	ProjectName     string
+	ProjectNames    []string
 	LabelsAsStrings []string
 	Labels          map[string]string
 	SyncWindowsFile string
 	Timeout         int
+	Workers         int
 }
 
 // Argonap is the logic/orchestrator.
@@ -63,6 +65,16 @@ func labelStringsToMap(labelsAsStrings []string) map[string]string {
 	}
 
 	return labels
+}
+
+func displayFilteredProjects(projects *[]v1alpha1.AppProject) string {
+	l := list.NewWriter()
+	l.SetStyle(list.StyleBulletCircle)
+	for _, p := range *projects {
+		l.AppendItem(p.ObjectMeta.Name)
+	}
+
+	return l.Render()
 }
 
 // New returns a new instance of argonap.
@@ -115,42 +127,46 @@ func (a *Argonap) Connect() {
 }
 
 func (a *Argonap) ClearSyncWindows() {
-	a.OutputHeading("Clearing SyncWindows on matching AppProjects.")
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Duration(a.Config.Timeout)*time.Second)
 	defer cancel()
 
+	a.OutputHeading("🔍  Searching for Projects.")
 	appProjects, err := a.ArgoCDClient.ListProjects(ctxTimeout)
 	if err != nil {
 		a.Error(fmt.Sprintf("Error fetching Projects: %s", err.Error()))
 	}
 
-	appProjectsToClear := filterProjects(appProjects, a.Config.ProjectName, a.Config.Labels, true)
+	appProjectsToClear := filterProjects(appProjects, a.Config.ProjectNames, a.Config.Labels, true)
 
-	var selectedProjectNames []string
-	for _, p := range appProjectsToClear {
-		selectedProjectNames = append(selectedProjectNames, p.ObjectMeta.Name)
+	a.Output(fmt.Sprintf("%d projects found with SyncWindows.", len(appProjectsToClear)))
+	if len(appProjectsToClear) > 0 {
+		a.Output(displayFilteredProjects(&appProjectsToClear))
 	}
 
-	a.Output(fmt.Sprintf("%d projects found with SyncWindows: %s", len(appProjectsToClear), strings.Join(selectedProjectNames, ", ")))
+	projects := make(chan *v1alpha1.AppProject, len(appProjectsToClear))
+	results := make(chan WorkerResult, len(appProjectsToClear))
 
-	for _, selectedAppProject := range appProjectsToClear {
-		appProjectToClear, err := a.ArgoCDClient.GetProject(ctxTimeout, selectedAppProject.ObjectMeta.Name)
-		if err != nil {
-			a.Error(fmt.Sprintf("Error refreshing %s project: %s", selectedAppProject.ObjectMeta.Name, err))
-		}
-
-		appProjectToClear.Spec.SyncWindows = nil
-		_, err = a.ArgoCDClient.UpdateProject(ctxTimeout, *appProjectToClear)
-
-		a.Output(fmt.Sprintf("Cleared SyncWindows from project %s.", appProjectToClear.ObjectMeta.Name))
-		if err != nil {
-			a.Error(fmt.Sprintf("Error updating %s project: %s", appProjectToClear.ObjectMeta.Name, err))
-		}
+	a.OutputHeading("🛠️  Setting SyncWindows on Projects.")
+	// Start workers
+	for i := 1; i <= a.Config.Workers; i++ {
+		go ClearWorker(i, a.ArgoCDClient, ctxTimeout, projects, results)
 	}
+
+	// Load projects
+	for _, project := range appProjectsToClear {
+		projects <- &project
+	}
+	close(projects)
+
+	for r := 0; r < len(appProjectsToClear); r++ {
+		result := <-results
+		a.OutputResult(result)
+	}
+
+	a.OutputHeading("🎉  Complete!")
 }
 
 func (a *Argonap) SetSyncWindows() {
-	a.OutputHeading("Setting SyncWindows on matching AppProjects.")
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Duration(a.Config.Timeout)*time.Second)
 	defer cancel()
 
@@ -159,38 +175,37 @@ func (a *Argonap) SetSyncWindows() {
 		a.Error(fmt.Sprintf("Unable to read SyncWindows file. %s", err.Error()))
 	}
 
+	a.OutputHeading("🔍  Searching for Projects.")
 	appProjects, err := a.ArgoCDClient.ListProjects(ctxTimeout)
 	if err != nil {
 		a.Error(fmt.Sprintf("Error fetching Projects. %s", err.Error()))
 	}
 
-	appProjectsToUpdate := filterProjects(appProjects, a.Config.ProjectName, a.Config.Labels, false)
+	appProjectsToUpdate := filterProjects(appProjects, a.Config.ProjectNames, a.Config.Labels, false)
 
-	var selectedProjectNames []string
-	for _, p := range appProjectsToUpdate {
-		selectedProjectNames = append(selectedProjectNames, p.ObjectMeta.Name)
+	a.Output(fmt.Sprintf("%d projects found to update:", len(appProjectsToUpdate)))
+	if len(appProjectsToUpdate) > 0 {
+		a.Output(displayFilteredProjects(&appProjectsToUpdate))
 	}
-	a.Output(fmt.Sprintf("%d projects found to update: %s", len(appProjectsToUpdate), strings.Join(selectedProjectNames, ", ")))
 
-	for _, selectedAppProject := range appProjectsToUpdate {
-		appProjectToUpdate, err := a.ArgoCDClient.GetProject(ctxTimeout, selectedAppProject.ObjectMeta.Name)
-		if err != nil {
-			a.Error(fmt.Sprintf("Error refreshing %s project: %s", selectedAppProject.ObjectMeta.Name, err))
-		}
+	projects := make(chan *v1alpha1.AppProject, len(appProjectsToUpdate))
+	results := make(chan WorkerResult, len(appProjectsToUpdate))
 
-		var mergedSyncWindows v1alpha1.SyncWindows
-
-		mergedSyncWindows = appProjectToUpdate.Spec.SyncWindows
-		for _, syncWindow := range syncWindowsToSet {
-			mergedSyncWindows = append(mergedSyncWindows, &syncWindow)
-		}
-
-		appProjectToUpdate.Spec.SyncWindows = mergedSyncWindows
-
-		_, err = a.ArgoCDClient.UpdateProject(ctxTimeout, *appProjectToUpdate)
-		a.Output(fmt.Sprintf("Added SyncWindows to project %s.", appProjectToUpdate.ObjectMeta.Name))
-		if err != nil {
-			a.Error(fmt.Sprintf("Error updating %s project: %s", appProjectToUpdate.ObjectMeta.Name, err))
-		}
+	a.OutputHeading("🛠️  Setting SyncWindows on Projects.")
+	// Start workers
+	for i := 1; i <= a.Config.Workers; i++ {
+		go SetWorker(i, a.ArgoCDClient, ctxTimeout, syncWindowsToSet, projects, results)
 	}
+
+	// Load projects
+	for _, project := range appProjectsToUpdate {
+		projects <- &project
+	}
+	close(projects)
+
+	for r := 0; r < len(appProjectsToUpdate); r++ {
+		result := <-results
+		a.OutputResult(result)
+	}
+	a.OutputHeading("🎉  Complete!")
 }

@@ -59,9 +59,9 @@ argocd account generate-token --account YOUR_ACCOUNT
 
 ## Selection
 
-Projects can be selected by the following CLI options:
-- `--name` will cause `argonap` to only make changes to the target AppProject.
-- `--label` will only select AppProjects where all labels are matched.  Labels should be in format `key=value` and be supplied multiple times.
+Projects can be selected by the following CLI flags.  Flags can be used multiple times.
+- `--name` will cause `argonap` to only make changes to the target AppProject(s).
+- `--label` will only select AppProjects where all labels are matched.  Labels should be in format `key=value`.  Using this flag multiple times will select projects that match all specified labels.
 
 Passing no options will run the command on all projects.
 
@@ -98,9 +98,10 @@ Global Flags:
       --auth-token string       JWT Authentication Token
       --insecure                Don't validate SSL certificate on client request
       --label strings           Labels to filter projects on in format 'key=value'.  Can be used multiple times.
-      --name string             Project name to update.  If specified, label filtering will not apply.
+      --name strings            Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.
       --server-address string   ArgoCD server address
       --timeout int             Context timeout in seconds. (default 240)
+      --workers int             # of parallel workers. (default 4)
 ```
 
 ### `clear`
@@ -122,7 +123,8 @@ Global Flags:
       --auth-token string       JWT Authentication Token
       --insecure                Don't validate SSL certificate on client request
       --label strings           Labels to filter projects on in format 'key=value'.  Can be used multiple times.
-      --name string             Project name to update.  If specified, label filtering will not apply.
+      --name strings            Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.
       --server-address string   ArgoCD server address
       --timeout int             Context timeout in seconds. (default 240)
+      --workers int             # of parallel workers. (default 4)
 ```

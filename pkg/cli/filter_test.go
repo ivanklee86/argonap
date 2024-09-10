@@ -87,13 +87,13 @@ func TestProjectFilter(t *testing.T) {
 
 	t.Run("filterProjects returns all projects if no labels are specified", func(t *testing.T) {
 		tags := make(map[string]string)
-		assert.Len(t, filterProjects(&projectsList, "", tags, false), 3)
+		assert.Len(t, filterProjects(&projectsList, []string{}, tags, false), 3)
 	})
 
 	t.Run("filterProjects returns a matching projects if labels are specified", func(t *testing.T) {
 		tags := make(map[string]string)
 		tags["team"] = "Eagles"
-		projectResult := filterProjects(&projectsList, "", tags, false)
+		projectResult := filterProjects(&projectsList, []string{}, tags, false)
 		assert.Len(t, projectResult, 1)
 		assert.Equal(t, projectResult[0].ObjectMeta.Name, "ProjectC")
 	})
@@ -101,19 +101,19 @@ func TestProjectFilter(t *testing.T) {
 	t.Run("filterProjects returns some matching projects if labels are specified", func(t *testing.T) {
 		tags := make(map[string]string)
 		tags["env"] = "prod"
-		assert.Len(t, filterProjects(&projectsList, "", tags, false), 2)
+		assert.Len(t, filterProjects(&projectsList, []string{}, tags, false), 2)
 	})
 
 	t.Run("filterProjects returns proejcts with only SyncWindows", func(t *testing.T) {
 		tags := make(map[string]string)
 		tags["env"] = "prod"
-		projectResult := filterProjects(&projectsList, "", tags, true)
+		projectResult := filterProjects(&projectsList, []string{}, tags, true)
 		assert.Len(t, projectResult, 1)
 		assert.Equal(t, projectResult[0].ObjectMeta.Name, "ProjectA")
 	})
 
 	t.Run("filterProjects returns named project if specified", func(t *testing.T) {
 		tags := make(map[string]string)
-		assert.Len(t, filterProjects(&projectsList, "ProjectA", tags, false), 1)
+		assert.Len(t, filterProjects(&projectsList, []string{"ProjectA"}, tags, false), 1)
 	})
 }

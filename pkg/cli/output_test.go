@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"os"
 	"testing"
@@ -45,5 +46,34 @@ func TestOutputs(t *testing.T) {
 		out, err := io.ReadAll(b)
 		assert.Nil(t, err)
 		assert.Contains(t, stripansi.Strip(string(out)), testPhrase)
+	})
+
+	t.Run("outputs successful worker results", func(t *testing.T) {
+		sampleResult := WorkerResult{
+			Status:      StatusSuccess,
+			ProjectName: "foobar",
+		}
+
+		argonap.OutputResult(sampleResult)
+
+		out, err := io.ReadAll(b)
+		assert.Nil(t, err)
+		assert.Contains(t, stripansi.Strip(string(out)), "Success")
+	})
+
+	t.Run("outputs failed worker results", func(t *testing.T) {
+		sampleError := errors.New("test")
+
+		sampleResult := WorkerResult{
+			Status:      StatusFailure,
+			ProjectName: "foobar",
+			Err:         &sampleError,
+		}
+
+		argonap.OutputResult(sampleResult)
+
+		out, err := io.ReadAll(b)
+		assert.Nil(t, err)
+		assert.Contains(t, stripansi.Strip(string(out)), "Failure")
 	})
 }

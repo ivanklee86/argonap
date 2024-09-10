@@ -49,6 +49,9 @@ func TestRoot(t *testing.T) {
 		command.SetArgs([]string{
 			"clear",
 			"--server-address", "localhost:8080",
+			"--name", appProjects[0].ObjectMeta.Name,
+			"--name", appProjects[1].ObjectMeta.Name,
+			"--name", appProjects[2].ObjectMeta.Name,
 			"--insecure",
 			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
 		})
@@ -80,8 +83,11 @@ func TestRoot(t *testing.T) {
 			"--server-address", "localhost:8080",
 			"--insecure",
 			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
+			"--name", appProjects[0].ObjectMeta.Name,
+			"--name", appProjects[1].ObjectMeta.Name,
+			"--name", appProjects[2].ObjectMeta.Name,
 			"--file", "./integration/exampleSyncWindows.json",
-			"--label", "purpose=test",
+			"--label", "env=dev",
 		})
 		err := command.Execute()
 		assert.Nil(t, err)
