@@ -32,6 +32,7 @@ func TestArgonapHappyPath(t *testing.T) {
 		SyncWindowsFile: "../../integration/exampleSyncWindows.json",
 		LabelsAsStrings: []string{"purpose=tests"},
 		Timeout:         240,
+		Workers:         4,
 	}
 
 	b := bytes.NewBufferString("")

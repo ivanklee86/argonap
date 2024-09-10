@@ -2,8 +2,6 @@ package cli
 
 import (
 	"context"
-	"fmt"
-	// "time"
 
 	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
 	"github.com/ivanklee86/argonap/pkg/client"
@@ -21,13 +19,11 @@ type WorkerResult struct {
 	Status      StatusType
 	SyncWindows int
 	ProjectName string
-	Error       *error
+	Err         *error
 }
 
 func SetWorker(id int, client client.IArgoCDClient, context context.Context, syncWindowsToSet []v1alpha1.SyncWindow, projectChannel <-chan *v1alpha1.AppProject, resultChannel chan<- WorkerResult) {
-	fmt.Printf("Worker %d: Starting\n", id)
 	for project := range projectChannel {
-		fmt.Printf("Worker %d: Processing project %s\n", id, project.ObjectMeta.Name)
 		result := WorkerResult{
 			Status:      StatusIncomplete,
 			ProjectName: project.ObjectMeta.Name,
@@ -36,7 +32,7 @@ func SetWorker(id int, client client.IArgoCDClient, context context.Context, syn
 		appProjectToUpdate, err := client.GetProject(context, project.ObjectMeta.Name)
 		if err != nil {
 			result.Status = StatusFailure
-			result.Error = &err
+			result.Err = &err
 			resultChannel <- result
 		}
 
@@ -52,7 +48,7 @@ func SetWorker(id int, client client.IArgoCDClient, context context.Context, syn
 		_, err = client.UpdateProject(context, *appProjectToUpdate)
 		if err != nil {
 			result.Status = StatusFailure
-			result.Error = &err
+			result.Err = &err
 			resultChannel <- result
 		}
 
