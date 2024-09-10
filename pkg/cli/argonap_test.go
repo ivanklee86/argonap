@@ -47,7 +47,7 @@ func TestArgonapHappyPath(t *testing.T) {
 		assert.Equal(t, argonap.Config.Labels, expectedMap)
 	})
 
-	t.Run("Octonap can clear all SyncWindows", func(t *testing.T) {
+	t.Run("argonap can clear all SyncWindows", func(t *testing.T) {
 		testArgoCDClient := client.CreateTestClient("../../.env")
 		appProjects := client.GenerateTestProjects("../../.env")
 		defer client.DeleteTestProjects(appProjects, "../../.env")
@@ -62,7 +62,7 @@ func TestArgonapHappyPath(t *testing.T) {
 		}
 	})
 
-	t.Run("Octonap can clear set SyncWindows", func(t *testing.T) {
+	t.Run("argonap can clear set SyncWindows", func(t *testing.T) {
 		testArgoCDClient := client.CreateTestClient("../../.env")
 		appProjects := client.GenerateTestProjects("../../.env")
 		defer client.DeleteTestProjects(appProjects, "../../.env")
