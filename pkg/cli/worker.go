@@ -38,7 +38,7 @@ func SetWorker(id int, client client.IArgoCDClient, context context.Context, syn
 
 		var mergedSyncWindows v1alpha1.SyncWindows
 
-		if appProjectToUpdate.Spec.SyncWindows != nil {
+		if appProjectToUpdate != nil && appProjectToUpdate.Spec.SyncWindows != nil {
 			mergedSyncWindows = appProjectToUpdate.Spec.SyncWindows
 		} else {
 			mergedSyncWindows = v1alpha1.SyncWindows{}
