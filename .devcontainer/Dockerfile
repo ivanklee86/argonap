@@ -16,6 +16,7 @@ COPY --from=quay.io/argoproj/argocd /usr/local/bin/argocd /usr/local/bin
 
 # - Golang
 RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+RUN go install github.com/jstemmer/go-junit-report/v2@latest
 RUN go install github.com/hairyhenderson/gomplate/v4/cmd/gomplate@latest
 RUN go install github.com/goreleaser/goreleaser/v2@latest
 

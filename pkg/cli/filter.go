@@ -16,12 +16,21 @@ func isMapSubset[K, V comparable](m, sub map[K]V) bool {
 	return true
 }
 
-func filterProjects(appProjects *v1alpha1.AppProjectList, name string, labels map[string]string, hasSyncWindow bool) []v1alpha1.AppProject {
+func arrayContains(a []string, v string) bool {
+	for _, item := range a {
+		if item == v {
+			return true
+		}
+	}
+	return false
+}
+
+func filterProjects(appProjects *v1alpha1.AppProjectList, names []string, labels map[string]string, hasSyncWindow bool) []v1alpha1.AppProject {
 	matchingProjects := []v1alpha1.AppProject{}
 
-	if name != "" {
+	if len(names) > 0 {
 		for _, appProject := range appProjects.Items {
-			if appProject.ObjectMeta.Name == name {
+			if arrayContains(names, appProject.ObjectMeta.Name) {
 				matchingProjects = append(matchingProjects, appProject)
 			}
 		}

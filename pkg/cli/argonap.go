@@ -20,7 +20,7 @@ type Config struct {
 	Insecure        bool
 	AuthToken       string
 	DryRun          bool
-	ProjectName     string
+	ProjectNames    []string
 	LabelsAsStrings []string
 	Labels          map[string]string
 	SyncWindowsFile string
@@ -136,7 +136,7 @@ func (a *Argonap) ClearSyncWindows() {
 		a.Error(fmt.Sprintf("Error fetching Projects: %s", err.Error()))
 	}
 
-	appProjectsToClear := filterProjects(appProjects, a.Config.ProjectName, a.Config.Labels, true)
+	appProjectsToClear := filterProjects(appProjects, a.Config.ProjectNames, a.Config.Labels, true)
 
 	a.Output(fmt.Sprintf("%d projects found with SyncWindows.", len(appProjectsToClear)))
 	if len(appProjectsToClear) > 0 {
@@ -181,7 +181,7 @@ func (a *Argonap) SetSyncWindows() {
 		a.Error(fmt.Sprintf("Error fetching Projects. %s", err.Error()))
 	}
 
-	appProjectsToUpdate := filterProjects(appProjects, a.Config.ProjectName, a.Config.Labels, false)
+	appProjectsToUpdate := filterProjects(appProjects, a.Config.ProjectNames, a.Config.Labels, false)
 
 	a.Output(fmt.Sprintf("%d projects found to update:", len(appProjectsToUpdate)))
 	if len(appProjectsToUpdate) > 0 {

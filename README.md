@@ -98,7 +98,7 @@ Global Flags:
       --auth-token string       JWT Authentication Token
       --insecure                Don't validate SSL certificate on client request
       --label strings           Labels to filter projects on in format 'key=value'.  Can be used multiple times.
-      --name string             Project name to update.  If specified, label filtering will not apply.
+      --name strings            Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.
       --server-address string   ArgoCD server address
       --timeout int             Context timeout in seconds. (default 240)
       --workers int             # of parallel workers. (default 4)
@@ -123,7 +123,7 @@ Global Flags:
       --auth-token string       JWT Authentication Token
       --insecure                Don't validate SSL certificate on client request
       --label strings           Labels to filter projects on in format 'key=value'.  Can be used multiple times.
-      --name string             Project name to update.  If specified, label filtering will not apply.
+      --name strings            Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.
       --server-address string   ArgoCD server address
       --timeout int             Context timeout in seconds. (default 240)
       --workers int             # of parallel workers. (default 4)
