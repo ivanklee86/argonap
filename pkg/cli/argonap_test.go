@@ -57,7 +57,7 @@ func TestArgonapHappyPath(t *testing.T) {
 
 		assert.Nil(t, err)
 		for _, appProject := range appProjects {
-			updatedAppProject, _ := testArgoCDClient.GetProject(context.TODO(), appProject.Name)
+			updatedAppProject, _ := testArgoCDClient.GetProject(context.Background(), appProject.Name)
 			assert.Nil(t, updatedAppProject.Spec.SyncWindows)
 		}
 	})
@@ -72,7 +72,7 @@ func TestArgonapHappyPath(t *testing.T) {
 
 		assert.Nil(t, err)
 		for index, appProject := range appProjects {
-			updatedAppProject, _ := testArgoCDClient.GetProject(context.TODO(), appProject.Name)
+			updatedAppProject, _ := testArgoCDClient.GetProject(context.Background(), appProject.Name)
 			if index == 1 { // SyncWindow already exists
 				assert.Len(t, updatedAppProject.Spec.SyncWindows, 3)
 			} else {

@@ -34,6 +34,7 @@ func SetWorker(id int, client client.IArgoCDClient, context context.Context, syn
 			result.Status = StatusFailure
 			result.Err = &err
 			results <- result
+			return
 		}
 
 		var mergedSyncWindows v1alpha1.SyncWindows
@@ -55,6 +56,7 @@ func SetWorker(id int, client client.IArgoCDClient, context context.Context, syn
 			result.Status = StatusFailure
 			result.Err = &err
 			results <- result
+			return
 		}
 
 		result.Status = StatusSuccess
@@ -75,6 +77,7 @@ func ClearWorker(id int, client client.IArgoCDClient, context context.Context, p
 			result.Status = StatusFailure
 			result.Err = &err
 			results <- result
+			return
 		}
 
 		appProjectToClear.Spec.SyncWindows = nil
@@ -83,6 +86,7 @@ func ClearWorker(id int, client client.IArgoCDClient, context context.Context, p
 			result.Status = StatusFailure
 			result.Err = &err
 			results <- result
+			return
 		}
 
 		result.Status = StatusSuccess
