@@ -37,10 +37,10 @@ func (a *Argonap) OutputResult(result WorkerResult) {
 	var output string
 	switch status := result.Status; status {
 	case StatusSuccess:
-		output = fmt.Sprintf("Finished with %s status: %s\n", result.ProjectName, text.FgGreen.Sprint("Success"))
+		output = fmt.Sprintf("Finished updating %s with status: %s\n", result.ProjectName, text.FgGreen.Sprint("Success"))
 
 	case StatusFailure:
-		output = fmt.Sprintf("Finished with %s status: %s\n%s\n", result.ProjectName, text.FgRed.Sprint("Failure"), text.FgRed.Sprintf("%s", *result.Err))
+		output = fmt.Sprintf("Finished updating %s with status: %s\n%s\n", result.ProjectName, text.FgRed.Sprint("Failure"), text.FgRed.Sprintf("%s", *result.Err))
 	}
 
 	_, err := fmt.Fprint(a.Out, output)

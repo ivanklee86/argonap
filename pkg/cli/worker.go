@@ -22,8 +22,8 @@ type WorkerResult struct {
 	Err         *error
 }
 
-func SetWorker(id int, client client.IArgoCDClient, context context.Context, syncWindowsToSet []v1alpha1.SyncWindow, projectChannel <-chan *v1alpha1.AppProject, resultChannel chan<- WorkerResult) {
-	for project := range projectChannel {
+func SetWorker(id int, client client.IArgoCDClient, context context.Context, syncWindowsToSet []v1alpha1.SyncWindow, projects <-chan *v1alpha1.AppProject, results chan<- WorkerResult) {
+	for project := range projects {
 		result := WorkerResult{
 			Status:      StatusIncomplete,
 			ProjectName: project.ObjectMeta.Name,
@@ -33,7 +33,7 @@ func SetWorker(id int, client client.IArgoCDClient, context context.Context, syn
 		if err != nil {
 			result.Status = StatusFailure
 			result.Err = &err
-			resultChannel <- result
+			results <- result
 		}
 
 		var mergedSyncWindows v1alpha1.SyncWindows
@@ -49,11 +49,39 @@ func SetWorker(id int, client client.IArgoCDClient, context context.Context, syn
 		if err != nil {
 			result.Status = StatusFailure
 			result.Err = &err
-			resultChannel <- result
+			results <- result
 		}
 
 		result.Status = StatusSuccess
 		result.SyncWindows = len(mergedSyncWindows)
-		resultChannel <- result
+		results <- result
+	}
+}
+
+func ClearWorker(id int, client client.IArgoCDClient, context context.Context, projects <-chan *v1alpha1.AppProject, results chan<- WorkerResult) {
+	for project := range projects {
+		result := WorkerResult{
+			Status:      StatusIncomplete,
+			ProjectName: project.ObjectMeta.Name,
+		}
+
+		appProjectToClear, err := client.GetProject(context, project.ObjectMeta.Name)
+		if err != nil {
+			result.Status = StatusFailure
+			result.Err = &err
+			results <- result
+		}
+
+		appProjectToClear.Spec.SyncWindows = nil
+		_, err = client.UpdateProject(context, *appProjectToClear)
+		if err != nil {
+			result.Status = StatusFailure
+			result.Err = &err
+			results <- result
+		}
+
+		result.Status = StatusSuccess
+		result.SyncWindows = 0
+		results <- result
 	}
 }

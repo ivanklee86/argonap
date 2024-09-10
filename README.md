@@ -101,6 +101,7 @@ Global Flags:
       --name string             Project name to update.  If specified, label filtering will not apply.
       --server-address string   ArgoCD server address
       --timeout int             Context timeout in seconds. (default 240)
+      --workers int             # of parallel workers. (default 4)
 ```
 
 ### `clear`
@@ -125,4 +126,5 @@ Global Flags:
       --name string             Project name to update.  If specified, label filtering will not apply.
       --server-address string   ArgoCD server address
       --timeout int             Context timeout in seconds. (default 240)
+      --workers int             # of parallel workers. (default 4)
 ```
