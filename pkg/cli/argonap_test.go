@@ -62,7 +62,7 @@ func TestArgonapHappyPath(t *testing.T) {
 		}
 	})
 
-	t.Run("argonap can clear set SyncWindows", func(t *testing.T) {
+	t.Run("argonap can set SyncWindows", func(t *testing.T) {
 		testArgoCDClient := client.CreateTestClient("../../.env")
 		appProjects := client.GenerateTestProjects("../../.env")
 		defer client.DeleteTestProjects(appProjects, "../../.env")

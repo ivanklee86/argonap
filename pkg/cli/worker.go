@@ -38,7 +38,12 @@ func SetWorker(id int, client client.IArgoCDClient, context context.Context, syn
 
 		var mergedSyncWindows v1alpha1.SyncWindows
 
-		mergedSyncWindows = appProjectToUpdate.Spec.SyncWindows
+		if appProjectToUpdate.Spec.SyncWindows != nil {
+			mergedSyncWindows = appProjectToUpdate.Spec.SyncWindows	
+		} else {
+			mergedSyncWindows = v1alpha1.SyncWindows{}
+		}
+		
 		for _, syncWindow := range syncWindowsToSet {
 			mergedSyncWindows = append(mergedSyncWindows, &syncWindow)
 		}
