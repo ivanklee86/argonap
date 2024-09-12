@@ -146,7 +146,7 @@ func (a *Argonap) ClearSyncWindows() {
 	projects := make(chan *v1alpha1.AppProject, len(appProjectsToClear))
 	results := make(chan WorkerResult, len(appProjectsToClear))
 
-	a.OutputHeading("🛠️  Setting SyncWindows on Projects.")
+	a.OutputHeading("🛠️  Clearing SyncWindows on Projects.")
 	// Start workers
 	for i := 1; i <= a.Config.Workers; i++ {
 		go ClearWorker(i, a.ArgoCDClient, ctxTimeout, projects, results)
