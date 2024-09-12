@@ -1,6 +1,6 @@
 # argonap
 
-[![CI](https://github.com/ivanklee86/argonap/actions/workflows/ci.yaml/badge.svg)](https://github.com/ivanklee86/argonap/actions/workflows/ci.yaml) [![codecov](https://codecov.io/gh/ivanklee86/argonap/graph/badge.svg?token=KEWN2E756X)](https://codecov.io/gh/ivanklee86/argonap)
+![GitHub Release](https://img.shields.io/github/v/release/ivanklee86/argonap)[![CI](https://github.com/ivanklee86/argonap/actions/workflows/ci.yaml/badge.svg)](https://github.com/ivanklee86/argonap/actions/workflows/ci.yaml) [![codecov](https://codecov.io/gh/ivanklee86/argonap/graph/badge.svg?token=KEWN2E756X)](https://codecov.io/gh/ivanklee86/argonap)[![Go Reference](https://pkg.go.dev/badge/github.com/ivanklee86/argonap.svg)](https://pkg.go.dev/github.com/ivanklee86/argonap)
 
 CLI to make 🐙 take a quick 💤
 
