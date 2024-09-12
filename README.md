@@ -37,7 +37,7 @@ go install github.com/ivanklee86/argonap@latest
 
 ## Authentication
 
-`argonap` uses a JWT to authenticate to ArgoCD.  This can be configured in the Helm chartas follows:
+`argonap` uses a JWT to authenticate to ArgoCD.  This can be configured in the Helm chart as follows:
 
 ```YAML
 configs:
@@ -51,7 +51,7 @@ configs:
       g, YOUR_ACCOUNT_NAME, role:argonap
 ```
 
-A JWT can then generated using the ArgoCD CLI using the following command:
+A JWT can be then generated using the ArgoCD CLI using the following command:
 ```shell
 argocd login # Using username/password or SSO
 argocd account generate-token --account YOUR_ACCOUNT
