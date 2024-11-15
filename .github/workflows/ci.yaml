@@ -49,7 +49,7 @@ jobs:
     - name: Generate lcov coverage report.
       uses: jandelgado/gcov2lcov-action@v1.1.1
     - name: Upload results to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
     - name: Save artifacts.
