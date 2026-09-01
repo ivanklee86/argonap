@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - name: Install Go
       uses: actions/setup-go@v5
       with:
@@ -67,7 +67,7 @@ jobs:
       with:
         go-version: 1.23.x
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - name: Generate format report.
       run: gofmt -d .
     - name: Run format again (so job will error if format issues found).
