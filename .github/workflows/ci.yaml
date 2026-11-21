@@ -137,3 +137,38 @@ jobs:
       with:
         name: coverage-report
         path: ./coverage.html
+
+  release-check:
+    # Builds what release.yaml publishes, minus the push: every goreleaser target plus both image
+    # platforms. Without this, a broken Dockerfile or .goreleaser.yaml passes every PR check and only
+    # fails after a tag exists.
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+    - name: Install Go
+      uses: actions/setup-go@v7
+      with:
+        go-version-file: go.mod
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v4
+      with:
+        platforms: arm64
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+    - name: Snapshot release
+      uses: goreleaser/goreleaser-action@a4f02ab5355a589de60d917a659ce617ed19b3de # v7.3.0
+      with:
+        distribution: goreleaser
+        version: v2.20.2 # github-releases/goreleaser/goreleaser
+        args: release --snapshot --clean
+    - name: Smoke-test both images
+      run: |
+        for arch in amd64 arm64; do
+          image=$(docker images ghcr.io/ivanklee86/argonap --format '{{.Repository}}:{{.Tag}}' | grep -- "-${arch}$")
+          echo "::group::${image}"
+          docker run --rm --platform "linux/${arch}" "${image}" --help
+          echo "::endgroup::"
+        done
