@@ -22,7 +22,7 @@ func TestRoot(t *testing.T) {
 		command.SetOut(b)
 		command.SetArgs([]string{
 			"--server-address", "localhost:8080",
-			"--insecure",
+			"--plaintext",
 			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
 		})
 		err := command.Execute()
@@ -52,7 +52,7 @@ func TestRoot(t *testing.T) {
 			"--name", appProjects[0].ObjectMeta.Name,
 			"--name", appProjects[1].ObjectMeta.Name,
 			"--name", appProjects[2].ObjectMeta.Name,
-			"--insecure",
+			"--plaintext",
 			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
 		})
 		err := command.Execute()
@@ -81,7 +81,7 @@ func TestRoot(t *testing.T) {
 		command.SetArgs([]string{
 			"set",
 			"--server-address", "localhost:8080",
-			"--insecure",
+			"--plaintext",
 			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
 			"--name", appProjects[0].ObjectMeta.Name,
 			"--name", appProjects[1].ObjectMeta.Name,

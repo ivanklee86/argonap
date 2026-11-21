@@ -18,6 +18,7 @@ const TIMEOUT = 120
 type Config struct {
 	ServerAddr      string
 	Insecure        bool
+	PlainText       bool
 	AuthToken       string
 	DryRun          bool
 	ProjectNames    []string
@@ -115,6 +116,7 @@ func (a *Argonap) Connect() {
 	clientConfig := client.ArgoCDClientOptions{
 		ServerAddr: a.Config.ServerAddr,
 		Insecure:   a.Config.Insecure,
+		PlainText:  a.Config.PlainText,
 		AuthToken:  a.Config.AuthToken,
 	}
 	argocdClient, err := client.New(&clientConfig)

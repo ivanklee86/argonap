@@ -2,8 +2,11 @@ kind: Simple
 apiVersion: k3d.io/v1alpha5
 servers: 1
 agents: 1
+# Pinned rather than k3d's default so the Kubernetes version only moves with a deliberate
+# (Renovate) bump. Keep it within Argo CD's tested Kubernetes versions.
+image: rancher/k3s:v1.37.2-k3s1
 ports:
-  - port: 8080:443
+  - port: 8080:80
     nodeFilters:
       - loadbalancer
 options:
@@ -11,7 +14,14 @@ options:
     wait: true
   k3s:
     extraArgs:
+      # k3s's bundled Traefik is disabled in favor of a pinned Traefik Helm install
+      # (integration/kubernetes/traefik), matching how the rest of the stack's versions are pinned.
       - arg: --disable=traefik
+        nodeFilters:
+          - server:*
+      # k3s >= 1.37 also bundles a gateway-api-crd add-on. Its helm-controller job races the pinned
+      # Gateway API install in tasks/k8s.yaml (server-side apply conflicts with manager "helm").
+      - arg: --disable=gateway-api-crd
         nodeFilters:
           - server:*
   kubeconfig:

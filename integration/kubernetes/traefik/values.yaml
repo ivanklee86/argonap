@@ -1,0 +1,4 @@
+traefik:
+  providers:
+    kubernetesGateway:
+      enabled: true
