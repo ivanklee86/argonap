@@ -2,5 +2,226 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "schedule": [
+    "on friday"
+  ],
+  "minimumReleaseAge": "5 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
+  "pre-commit": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchDatasources": [
+        "go"
+      ],
+      "groupName": "go"
+    },
+    {
+      "matchDatasources": [
+        "golang-version"
+      ],
+      "groupName": "go"
+    },
+    {
+      "description": "argo-cd moves only on deliberate bumps (tangle ADR 0015); majors still raise a PR",
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchPackageNames": [
+        "github.com/argoproj/argo-cd/v3"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "k8s.io/* and gitops-engine mirror argo-cd's own replace block (tangle ADR 0020); only an argo-cd bump should move them",
+      "matchDatasources": [
+        "go"
+      ],
+      "matchPackageNames": [
+        "k8s.io/**",
+        "github.com/argoproj/argo-cd/gitops-engine/**"
+      ],
+      "enabled": false
+    },
+    {
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "matchPackageNames": [
+        "golang",
+        "ghcr.io/ivanklee86/devcontainer/go"
+      ],
+      "groupName": "go"
+    },
+    {
+      "matchManagers": [
+        "helmv3"
+      ],
+      "groupName": "k8s"
+    },
+    {
+      "matchManagers": [
+        "dockerfile",
+        "custom.regex"
+      ],
+      "matchPackageNames": [
+        "rancher/kubectl",
+        "rancher/k3s",
+        "alpine/helm",
+        "derailed/k9s",
+        "quay.io/argoproj/argocd"
+      ],
+      "groupName": "k8s"
+    },
+    {
+      "matchDatasources": [
+        "github-releases"
+      ],
+      "groupName": "k8s"
+    },
+    {
+      "description": "CI tooling pinned via github-releases belongs with the actions, not the cluster stack",
+      "matchDatasources": [
+        "github-releases"
+      ],
+      "matchPackageNames": [
+        "go-task/task",
+        "goreleaser/goreleaser",
+        "k1LoW/octocov",
+        "j178/prek"
+      ],
+      "groupName": "ci"
+    },
+    {
+      "matchManagers": [
+        "github-actions",
+        "pre-commit"
+      ],
+      "groupName": "ci"
+    },
+    {
+      "matchManagers": [
+        "devcontainer"
+      ],
+      "groupName": "devcontainer dependencies",
+      "automerge": true,
+      "platformAutomerge": true
+    },
+    {
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": true,
+      "platformAutomerge": true
+    },
+    {
+      "matchDatasources": [
+        "go"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
+    },
+    {
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "matchPackageNames": [
+        "golang",
+        "ghcr.io/ivanklee86/devcontainer/go"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
+    },
+    {
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true,
+      "platformAutomerge": true
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "go install <pkg>@<version>",
+      "managerFilePatterns": [
+        "/^tasks/go\\.yaml$/",
+        "/^Dockerfile$/",
+        "/^\\.devcontainer/Dockerfile$/"
+      ],
+      "matchStrings": [
+        "go install (?<depName>[^\\s@]+)@(?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "go"
+    },
+    {
+      "customType": "regex",
+      "description": "ARG <TOOL>_VERSION=<version> # <datasource>/<depName>",
+      "managerFilePatterns": [
+        "/^\\.devcontainer/Dockerfile$/"
+      ],
+      "matchStrings": [
+        "ARG [A-Z0-9_]+_VERSION=(?<currentValue>\\S+) # (?<datasource>[^/\\s]+)/(?<depName>\\S+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "description": "Gateway API CRDs applied before Traefik",
+      "managerFilePatterns": [
+        "/^tasks/k8s\\.yaml$/"
+      ],
+      "matchStrings": [
+        "gateway-api/releases/download/(?<currentValue>v[0-9.]+)/"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "kubernetes-sigs/gateway-api"
+    },
+    {
+      "customType": "regex",
+      "description": "k3s node image for the test cluster",
+      "managerFilePatterns": [
+        "/^k3d-config\\.yaml$/"
+      ],
+      "matchStrings": [
+        "image: (?<depName>rancher/k3s):(?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-k3s(?<build>\\d+)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Task version input on the setup-task composite action",
+      "managerFilePatterns": [
+        "/^\\.github/actions/setup-task/action\\.yml$/"
+      ],
+      "matchStrings": [
+        "default: '(?<currentValue>[^']+)' # (?<datasource>[^/\\s]+)/(?<depName>\\S+)"
+      ],
+      "extractVersionTemplate": "^v?(?<version>.+)$"
+    },
+    {
+      "customType": "regex",
+      "description": "<TOOL>_VERSION env and the octocov action's version input; prek-version and goreleaser's version are read natively by the github-actions manager",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "[A-Z0-9_]+_VERSION: (?<currentValue>v?\\d\\S*) # (?<datasource>[^/\\s]+)/(?<depName>\\S+)",
+        "version: (?<currentValue>v?\\d\\S*) # (?<datasource>[^/\\s]+)/(?<depName>k1LoW/octocov)\\s"
+      ]
+    }
   ]
 }
