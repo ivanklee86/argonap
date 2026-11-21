@@ -6,69 +6,169 @@ on:
       - 'main'
   pull_request:
 
+# Cancel superseded PR runs (Renovate force-pushes in bursts). Runs on main always finish, so
+# octocov keeps its baseline.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Least privilege by default; jobs that need more ask for it themselves.
 permissions:
-  checks: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - name: Install Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v7
+      with:
+        go-version-file: go.mod
+    - name: Check formatting
+      run: |
+        gofmt -d .
+        test -z "$(gofmt -l .)"
+    - name: Install Task
+      uses: ./.github/actions/setup-task
+    - name: Cache Go tool binaries
+      uses: actions/cache@v6
+      with:
+        path: ~/go/bin
+        # Shared with the test job. os/arch keep compiled binaries from crossing runners.
+        key: go-tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tasks/go.yaml') }}
+    - name: Install CI tools
+      run: task go:install-ci
+    - name: Lint code
+      run: task go:lint
+    - name: Compile code
+      run: task go:build
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+    - name: Install Go
+      # go-fmt (dnephin/pre-commit-golang) is `language: script` and runs whatever gofmt is on PATH.
+      uses: actions/setup-go@v7
+      with:
+        go-version-file: go.mod
+    - name: Run pre-commit hooks via prek
+      uses: j178/prek-action@44924fe9ef4a6f88253c4b6b1bf11c689d3ce53d # v3.1.0
+      with:
+        prek-version: v0.5.11 # github-releases/j178/prek
+
+  test:
+    # Every test talks to a live Argo CD, so this job is the whole test suite.
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write         # publish-unit-test-result-action's check run
+      pull-requests: write  # its PR comment, and octocov's
+      actions: write        # octocov's artifact:// datastore
+    env:
+      # Tracked by Renovate (renovate.json customManagers); keep in step with .devcontainer/Dockerfile.
+      K3D_VERSION: v5.9.0 # github-releases/k3d-io/k3d
+      ARGOCD_VERSION: v3.6.2 # github-releases/argoproj/argo-cd
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+    - name: Install Go
+      uses: actions/setup-go@v7
       with:
         go-version-file: go.mod
     - name: Install Task
       uses: ./.github/actions/setup-task
-    - name: Set up Docker
-      uses: crazy-max/ghaction-setup-docker@v4
+    - name: Cache Go tool binaries
+      uses: actions/cache@v6
+      with:
+        path: ~/go/bin
+        key: go-tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tasks/go.yaml') }}
+    - name: Cache k3d/argocd CLIs
+      id: cli-tools-cache
+      uses: actions/cache@v6
+      with:
+        path: |
+          /usr/local/bin/k3d
+          /usr/local/bin/argocd
+        key: cli-tools-${{ runner.os }}-${{ runner.arch }}-k3d-${{ env.K3D_VERSION }}-argocd-${{ env.ARGOCD_VERSION }}
     - name: Install k3d
-      run: curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+      if: steps.cli-tools-cache.outputs.cache-hit != 'true'
+      run: curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=${{ env.K3D_VERSION }} bash
     - name: Install argocd
+      if: steps.cli-tools-cache.outputs.cache-hit != 'true'
       run: |
-        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        curl -sSfL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/${{ env.ARGOCD_VERSION }}/argocd-linux-amd64
         sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
         rm argocd-linux-amd64
-    - name: Install all dependencies
+    - name: Install CI tools
       run: task go:install-ci
-    - name: Lint code.
-      run: task go:lint
-    - name: Start ArgoCD
+    - name: Start Argo CD
       run: task services
-    - name: Run tests.
+    - name: Run tests
       run: task go:test-ci
-    - name: Compile code
-      run: task go:build
-    - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v2
+    - name: Dump cluster state on failure
+      # The cluster is gone once the job ends, so this is the only chance to see why.
+      if: failure()
+      run: |
+        kubectl get pods -o wide || true
+        kubectl get events --sort-by=.lastTimestamp || true
+        kubectl describe pods -l app.kubernetes.io/part-of=argocd || true
+        kubectl logs -l app.kubernetes.io/part-of=argocd --all-containers --tail=200 --prefix || true
+    - name: Publish test results
+      # SHA-pinned, like octocov below: this step runs with checks/pull-requests: write.
+      uses: EnricoMi/publish-unit-test-result-action@da5b7be67623cd59bbbd1a0ce4f022050a55605f # v2.26.0
       if: always()
       with:
         files: report.xml
-    - name: Generate lcov coverage report.
-      uses: jandelgado/gcov2lcov-action@v1.1.1
-    - name: Upload results to Codecov
-      uses: codecov/codecov-action@v5
+        check_name: Test Results
+    - name: Report coverage via octocov
+      # Only after tests pass (no `if: always()`), so a failed run never becomes the baseline other
+      # PRs diff against. SHA-pinned rather than the mutable tag: this step runs with actions: write.
+      uses: k1LoW/octocov-action@a167dc0dee441b7ffc45e1b862ab55ec0d87f278 # v1.5.2
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-    - name: Save artifacts.
-      uses: actions/upload-artifact@v4
+        config: .octocov.yml
+        version: v0.83.5 # github-releases/k1LoW/octocov
+    - name: Save coverage report
+      uses: actions/upload-artifact@v7
       if: always()
       with:
-        name: Coverage report.
+        name: coverage-report
         path: ./coverage.html
 
-  format:
+  release-check:
+    # Builds what release.yaml publishes, minus the push: every goreleaser target plus both image
+    # platforms. Without this, a broken Dockerfile or .goreleaser.yaml passes every PR check and only
+    # fails after a tag exists.
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
     - name: Install Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v7
       with:
         go-version-file: go.mod
-    - name: Generate format report.
-      run: gofmt -d .
-    - name: Run format again (so job will error if format issues found).
-      run: test -z $(gofmt -l .)
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v4
+      with:
+        platforms: arm64
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+    - name: Snapshot release
+      uses: goreleaser/goreleaser-action@a4f02ab5355a589de60d917a659ce617ed19b3de # v7.3.0
+      with:
+        distribution: goreleaser
+        version: v2.20.2 # github-releases/goreleaser/goreleaser
+        args: release --snapshot --clean
+    - name: Smoke-test both images
+      run: |
+        for arch in amd64 arm64; do
+          image=$(docker images ghcr.io/ivanklee86/argonap --format '{{.Repository}}:{{.Tag}}' | grep -v ':latest-' | grep -- "-${arch}$")
+          echo "::group::${image}"
+          docker run --rm --platform "linux/${arch}" "${image}" --help
+          echo "::endgroup::"
+        done

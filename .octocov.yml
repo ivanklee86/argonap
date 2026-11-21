@@ -1,0 +1,15 @@
+coverage:
+  paths:
+    - coverage.out
+  # No gate yet: Codecov had none configured for argonap. Consider one (e.g. rubrical's
+  # `current >= 90% && diff >= -0.5% && patch >= 85%`) once the baseline settles.
+report:
+  datastores:
+    - artifact://${GITHUB_REPOSITORY}
+  if: is_default_branch
+diff:
+  datastores:
+    - artifact://${GITHUB_REPOSITORY}
+  if: is_pull_request
+comment:
+  if: is_pull_request

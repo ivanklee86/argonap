@@ -5,18 +5,47 @@ before:
 builds:
   - id: "argonap"
     binary: argonap
+    env:
+      # Static binaries: the image's distroless base has no libc, and nothing here needs cgo.
+      - CGO_ENABLED=0
     ldflags:
-      - -X main.version={{.Version}}
+      - -s -w -X main.version={{.Version}}
 changelog:
   disable: true
-dockers:
-  - image_templates:
-    - "ghcr.io/ivanklee86/argonap"
-brews:
+dockers_v2:
+  # Built with buildx as one multi-arch manifest at publish time. `goreleaser release --snapshot`
+  # (ci.yaml's release-check job) builds per-platform images locally instead, without pushing.
+  - images:
+      - "ghcr.io/ivanklee86/argonap"
+    tags:
+      - "{{ .Version }}"
+      - "{{ if not .Prerelease }}latest{{ end }}"
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    labels:
+      "org.opencontainers.image.source": "{{ .GitURL }}"
+      "org.opencontainers.image.version": "{{ .Version }}"
+      "org.opencontainers.image.revision": "{{ .FullCommit }}"
+      "org.opencontainers.image.licenses": "MIT"
+homebrew_casks:
+  # Replaces the deprecated `brews`. Retire Formula/argonap.rb in ivanklee86/homebrew-tap after the
+  # first cask release, as was done for tangle-cli.
   - name: argonap
     homepage: "https://github.com/ivanklee86/argonap"
     description: "A CLI to configure/clear SyncWindows on ArgoCD projects."
-    directory: Formula
+    directory: Casks
+    binaries:
+      - argonap
+    # Release binaries are unsigned, so macOS Gatekeeper quarantines them on
+    # download and refuses to run them. Strip the attribute after staging.
+    # `install_steps` (Homebrew's declarative DSL) replaces the deprecated Ruby `install` hook.
+    hooks:
+      post:
+        install_steps: |
+          on_macos do
+            run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{ .StagedPath }}/argonap"]
+          end
     repository:
       owner: ivanklee86
       name: homebrew-tap
