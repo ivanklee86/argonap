@@ -167,7 +167,7 @@ jobs:
     - name: Smoke-test both images
       run: |
         for arch in amd64 arm64; do
-          image=$(docker images ghcr.io/ivanklee86/argonap --format '{{.Repository}}:{{.Tag}}' | grep -- "-${arch}$")
+          image=$(docker images ghcr.io/ivanklee86/argonap --format '{{.Repository}}:{{.Tag}}' | grep -v ':latest-' | grep -- "-${arch}$")
           echo "::group::${image}"
           docker run --rm --platform "linux/${arch}" "${image}" --help
           echo "::endgroup::"
