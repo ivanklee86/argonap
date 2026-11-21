@@ -12,7 +12,7 @@ options:
   k3s:
     extraArgs:
       - arg: --disable=traefik
-        nodeFilters: 
+        nodeFilters:
           - server:*
   kubeconfig:
     updateDefaultKubeconfig: true

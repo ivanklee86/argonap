@@ -28,4 +28,4 @@ tasks:
   devcontainer:
     desc: "Test devcontainer changes"
     cmds:
-      - docker build -t devcontainer -f ./.devcontainer/Dockerfile .
+      - docker build -t devcontainer ./.devcontainer

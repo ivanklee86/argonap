@@ -1,0 +1,7 @@
+config:
+    default: true
+    # Prose lines aren't hard-wrapped, and CLI help output in code fences runs long.
+    MD013: false
+    # README.md has a "Help" subsection under each command.
+    MD024:
+        siblings_only: true

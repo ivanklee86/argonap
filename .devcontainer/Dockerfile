@@ -1,29 +1,13 @@
-# See here for image contents: https://github.com/microsoft/vscode-dev-containers/blob/main/containers/go/.devcontainer/Dockerfile
-ARG VARIANT="1"
-FROM mcr.microsoft.com/devcontainers/go:1-${VARIANT}
+# Shared Go base (ivanklee86/devcontainers). It already provides golangci-lint,
+# go-junit-report, gomplate, goreleaser, prek, Task, gh and Claude Code.
+FROM ghcr.io/ivanklee86/devcontainer/go:1.27
 
-# Install dependencies.
-# [Choice] Node.js version: none, lts/*, 16, 14, 12, 10
-ARG NODE_VERSION="none"
-RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
+# Kubernetes / Argo CD tooling for the local k3d test stack. The versions are kept
+# in step with tangle's .devcontainer/Dockerfile.
+ARG K3D_VERSION=v5.9.0 # github-releases/k3d-io/k3d
+RUN curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=${K3D_VERSION} bash
 
-USER vscode
-
-# Install tools
-# - Tools
-RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
-COPY --from=quay.io/argoproj/argocd /usr/local/bin/argocd /usr/local/bin
-
-# - Golang
-RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-RUN go install github.com/jstemmer/go-junit-report/v2@latest
-RUN go install github.com/hairyhenderson/gomplate/v4/cmd/gomplate@latest
-RUN go install github.com/goreleaser/goreleaser/v2@latest
-
-# - Kubernetes
-RUN curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-
-COPY --from=bitnami/kubectl /opt/bitnami/kubectl/bin/kubectl /usr/local/bin
-COPY --from=alpine/helm /usr/bin/helm /usr/local/bin
-COPY --from=derailed/k9s /bin/k9s /usr/local/bin
-
+COPY --from=rancher/kubectl:v1.36.2 /bin/kubectl /usr/local/bin/kubectl
+COPY --from=alpine/helm:4.3.2 /usr/bin/helm /usr/local/bin
+COPY --from=derailed/k9s:v0.50.18 /bin/k9s /usr/local/bin
+COPY --from=quay.io/argoproj/argocd:v3.6.2 /usr/local/bin/argocd /usr/local/bin

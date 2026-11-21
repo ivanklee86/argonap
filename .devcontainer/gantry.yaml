@@ -1,0 +1,16 @@
+version: 1
+
+output_path: devcontainer.json
+
+overlays:
+  - repo: https://github.com/ivanklee86/devcontainers
+    ref: main
+    files:
+      - devcontainer_configs/bases/go/devcontainer.json
+      - devcontainer_configs/features/prek.libsonnet
+      - devcontainer_configs/features/local_build.libsonnet
+
+  - repo: ..
+    subdirectory: .devcontainer
+    files:
+      - argonap.libsonnet
