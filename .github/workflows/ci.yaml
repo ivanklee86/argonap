@@ -21,7 +21,7 @@ jobs:
       with:
         go-version-file: go.mod
     - name: Install Task
-      uses: arduino/setup-task@v2
+      uses: ./.github/actions/setup-task
     - name: Set up Docker
       uses: crazy-max/ghaction-setup-docker@v4
     - name: Install k3d
