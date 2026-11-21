@@ -1,6 +1,6 @@
 # argonap
 
-![GitHub Release](https://img.shields.io/github/v/release/ivanklee86/argonap)[![CI](https://github.com/ivanklee86/argonap/actions/workflows/ci.yaml/badge.svg)](https://github.com/ivanklee86/argonap/actions/workflows/ci.yaml) [![codecov](https://codecov.io/gh/ivanklee86/argonap/graph/badge.svg?token=KEWN2E756X)](https://codecov.io/gh/ivanklee86/argonap)[![Go Reference](https://pkg.go.dev/badge/github.com/ivanklee86/argonap.svg)](https://pkg.go.dev/github.com/ivanklee86/argonap)
+![GitHub Release](https://img.shields.io/github/v/release/ivanklee86/argonap)[![CI](https://github.com/ivanklee86/argonap/actions/workflows/ci.yaml/badge.svg)](https://github.com/ivanklee86/argonap/actions/workflows/ci.yaml) [![Coverage](https://raw.githubusercontent.com/ivanklee86/octocov-central/main/badges/ivanklee86/argonap/coverage.svg)](https://octocov.dev/ivanklee86/argonap)[![Go Reference](https://pkg.go.dev/badge/github.com/ivanklee86/argonap.svg)](https://pkg.go.dev/github.com/ivanklee86/argonap)
 
 ![Example](docs/images/example.png)
 
