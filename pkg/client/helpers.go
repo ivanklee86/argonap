@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
+	"github.com/argoproj/argo-cd/v3/pkg/apis/application/v1alpha1"
 	"github.com/ivanklee86/argonap/pkg/testhelpers"
 	"github.com/joho/godotenv"
 )
@@ -52,7 +52,7 @@ func GenerateTestProjects(envFilePath string) []*v1alpha1.AppProject {
 	project2.Labels["env"] = "prod"
 	project2.Labels["department"] = "B"
 	project2.Labels["purpose"] = "tests"
-	project2.Spec.SyncWindows = append(project2.Spec.SyncWindows, &v1alpha1.SyncWindow{
+	project2.Spec.SyncWindows = append(project2.Spec.SyncWindows, &v1alpha1.InlineSyncWindow{
 		Kind:       "allow",
 		Schedule:   "9 1 * * *",
 		Duration:   "1h",
@@ -81,7 +81,7 @@ func DeleteTestProjects(projects []*v1alpha1.AppProject, envFilePath string) {
 	testClient := CreateTestClient(envFilePath)
 
 	for _, project := range projects {
-		_, err := testClient.DeleteProject(context.Background(), project.ObjectMeta.Name)
+		_, err := testClient.DeleteProject(context.Background(), project.Name)
 		if err != nil {
 			panic(err)
 		}

@@ -77,7 +77,7 @@ Passing no options will run the command on all projects.
 
 ### `set`
 
-The `set` command takes a file that contain a list SyncWindows to add to projects matching the selection criteria.  The file should be a JSON file containing items that match the [SyncWindows struct](https://pkg.go.dev/github.com/argoproj/argo-cd@v1.8.7/pkg/apis/application/v1alpha1#SyncWindow).
+The `set` command takes a file that contain a list SyncWindows to add to projects matching the selection criteria.  The file should be a JSON file containing items that match the [SyncWindow struct](https://pkg.go.dev/github.com/argoproj/argo-cd/v3/pkg/apis/application/v1alpha1#InlineSyncWindow).
 
 Example file:
 
@@ -101,18 +101,18 @@ Usage:
   argonap set [flags]
 
 Flags:
-      --file string   Path to file with SyncWindows to configure
-  -h, --help          help for set
+      --file string         Path to file with SyncWindows to configure
+  -h, --help[=true|false]   help for set
 
 Global Flags:
-      --auth-token string       JWT Authentication Token
-      --insecure                Don't validate SSL certificate on client request
-      --label strings           Labels to filter projects on in format 'key=value'.  Can be used multiple times.
-      --name strings            Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.
-      --plaintext               Connect to ArgoCD without TLS
-      --server-address string   ArgoCD server address
-      --timeout int             Context timeout in seconds. (default 240)
-      --workers int             # of parallel workers. (default 4)
+      --auth-token string        JWT Authentication Token
+      --insecure[=true|false]    Don't validate SSL certificate on client request
+      --label strings            Labels to filter projects on in format 'key=value'.  Can be used multiple times.
+      --name strings             Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.
+      --plaintext[=true|false]   Connect to ArgoCD without TLS
+      --server-address string    ArgoCD server address
+      --timeout int              Context timeout in seconds. (default 240)
+      --workers int              # of parallel workers. (default 4)
 ```
 
 ### `clear`
@@ -128,15 +128,15 @@ Usage:
   argonap clear [flags]
 
 Flags:
-  -h, --help   help for clear
+  -h, --help[=true|false]   help for clear
 
 Global Flags:
-      --auth-token string       JWT Authentication Token
-      --insecure                Don't validate SSL certificate on client request
-      --label strings           Labels to filter projects on in format 'key=value'.  Can be used multiple times.
-      --name strings            Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.
-      --plaintext               Connect to ArgoCD without TLS
-      --server-address string   ArgoCD server address
-      --timeout int             Context timeout in seconds. (default 240)
-      --workers int             # of parallel workers. (default 4)
+      --auth-token string        JWT Authentication Token
+      --insecure[=true|false]    Don't validate SSL certificate on client request
+      --label strings            Labels to filter projects on in format 'key=value'.  Can be used multiple times.
+      --name strings             Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.
+      --plaintext[=true|false]   Connect to ArgoCD without TLS
+      --server-address string    ArgoCD server address
+      --timeout int              Context timeout in seconds. (default 240)
+      --workers int              # of parallel workers. (default 4)
 ```

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
+	"github.com/argoproj/argo-cd/v3/pkg/apis/application/v1alpha1"
 	"github.com/ivanklee86/argonap/pkg/testhelpers"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
@@ -40,7 +40,7 @@ func TestClinet(t *testing.T) {
 
 		project, err := client.GetProject(context.Background(), projectName)
 		assert.Nil(t, err)
-		assert.Equal(t, project.ObjectMeta.Name, projectName)
+		assert.Equal(t, project.Name, projectName)
 	})
 
 	t.Run("Can update projects", func(t *testing.T) {
@@ -52,7 +52,7 @@ func TestClinet(t *testing.T) {
 
 		project.Annotations = make(map[string]string)
 		project.Annotations["test"] = "value"
-		project.Spec.SyncWindows = append(project.Spec.SyncWindows, &v1alpha1.SyncWindow{
+		project.Spec.SyncWindows = append(project.Spec.SyncWindows, &v1alpha1.InlineSyncWindow{
 			Kind:       "allow",
 			Schedule:   "10 1 * * *",
 			Duration:   "1h",

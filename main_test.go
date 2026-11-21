@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"os"
 	"testing"
@@ -49,9 +48,9 @@ func TestRoot(t *testing.T) {
 		command.SetArgs([]string{
 			"clear",
 			"--server-address", "localhost:8080",
-			"--name", appProjects[0].ObjectMeta.Name,
-			"--name", appProjects[1].ObjectMeta.Name,
-			"--name", appProjects[2].ObjectMeta.Name,
+			"--name", appProjects[0].Name,
+			"--name", appProjects[1].Name,
+			"--name", appProjects[2].Name,
 			"--plaintext",
 			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
 		})
@@ -64,10 +63,8 @@ func TestRoot(t *testing.T) {
 			assert.Nil(t, updatedAppProject.Spec.SyncWindows)
 		}
 
-		out, err := io.ReadAll(b)
+		_, err = io.ReadAll(b)
 		assert.Nil(t, err)
-
-		fmt.Sprintln(string(out))
 	})
 
 	t.Run("Run set command", func(t *testing.T) {
@@ -83,9 +80,9 @@ func TestRoot(t *testing.T) {
 			"--server-address", "localhost:8080",
 			"--plaintext",
 			"--auth-token", os.Getenv("ARGOCD_TOKEN"),
-			"--name", appProjects[0].ObjectMeta.Name,
-			"--name", appProjects[1].ObjectMeta.Name,
-			"--name", appProjects[2].ObjectMeta.Name,
+			"--name", appProjects[0].Name,
+			"--name", appProjects[1].Name,
+			"--name", appProjects[2].Name,
 			"--file", "./integration/exampleSyncWindows.json",
 			"--label", "env=dev",
 		})
