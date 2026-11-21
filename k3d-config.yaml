@@ -19,6 +19,11 @@ options:
       - arg: --disable=traefik
         nodeFilters:
           - server:*
+      # k3s >= 1.37 also bundles a gateway-api-crd add-on. Its helm-controller job races the pinned
+      # Gateway API install in tasks/k8s.yaml (server-side apply conflicts with manager "helm").
+      - arg: --disable=gateway-api-crd
+        nodeFilters:
+          - server:*
   kubeconfig:
     updateDefaultKubeconfig: true
     switchCurrentContext: true
