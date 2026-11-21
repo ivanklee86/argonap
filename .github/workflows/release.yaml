@@ -23,7 +23,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Set up Docker
-        uses: crazy-max/ghaction-setup-docker@v4
+        uses: crazy-max/ghaction-setup-docker@v5
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
