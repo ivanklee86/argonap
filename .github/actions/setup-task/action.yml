@@ -1,0 +1,46 @@
+name: 'Setup Task'
+description: 'Install a pinned Task CLI, restored from the Actions cache instead of re-downloaded on every job.'
+
+inputs:
+  version:
+    # Always an exact version, never a `.x` range. arduino/setup-task resolves
+    # a range by listing go-task/task's tags via api.github.com, and that call
+    # is anonymous unless `repo-token` is set — 60 requests/hour shared by every
+    # job running on that runner's public IP. That's what broke CI on the
+    # action's own `3.x` default ("API rate limit exceeded for <runner ip>",
+    # every job that installs Task; see tangle ADR 0018). A valid semver
+    # short-circuits the lookup in the action's own `computeVersion()`, so a
+    # pinned version makes no api.github.com request at all.
+    description: 'Exact Task version to install, without the leading `v`.'
+    required: false
+    default: '3.54.0' # github-releases/go-task/task
+  repo-token:
+    # Unused while `version` stays pinned (see above); it only matters if the
+    # pin is ever loosened to a range, and then it makes the tag listing an
+    # authenticated request against this repo's own 5,000/hour budget rather
+    # than the shared anonymous one.
+    description: 'Token used to authenticate the go-task/task tag lookup.'
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Restore cached Task binary
+      uses: actions/cache@v6
+      with:
+        # arduino/setup-task installs via @actions/tool-cache, which writes
+        # <tool cache>/task/<version>/<arch>/task plus a sibling <arch>.complete
+        # marker file that its own `tc.find()` checks for. Cache the whole
+        # `task` directory so the marker comes back with the binary — without
+        # it a restored cache still looks like a miss and re-downloads.
+        path: ${{ runner.tool_cache }}/task
+        key: task-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
+    - name: Install Task
+      # On a cache hit this only puts the restored binary on PATH. On a miss it
+      # downloads the release tarball from github.com (a release asset, not the
+      # rate-limited API) and the cache step above saves it for the next run.
+      uses: arduino/setup-task@v3.0.0
+      with:
+        version: ${{ inputs.version }}
+        repo-token: ${{ inputs.repo-token }}
