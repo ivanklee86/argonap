@@ -39,13 +39,18 @@ tasks:
     cmds:
       - golangci-lint run --timeout 5m
 
+  # -p 1: every package's tests share the one local Argo CD, and pkg/cli selects projects by the
+  # purpose=tests label that every package's test projects carry, so packages running in parallel
+  # update each other's projects.
   test:
     desc: Run Golang tests.
     cmds:
-      - go test -v ./... 2>&1
+      - go test -p 1 -v ./... 2>&1
 
   test-ci:
     desc: Run Golang tests and generate coverage report.
+    # Without pipefail the pipeline exits with tee's status, so failing tests passed the CI step.
+    set: [pipefail]
     cmds:
-      - go test --coverprofile {{.COVERAGE_RAW}} -v ./... 2>&1  | tee >(go-junit-report > report.xml)
+      - go test -p 1 --coverprofile {{.COVERAGE_RAW}} -v ./... 2>&1  | tee >(go-junit-report > report.xml)
       - go tool cover -html={{.COVERAGE_RAW}} -o {{.COVERAGE_REPORT}}
