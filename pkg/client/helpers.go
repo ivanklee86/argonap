@@ -17,7 +17,7 @@ func CreateTestClient(envFilePath string) IArgoCDClient {
 
 	clientOptions := ArgoCDClientOptions{
 		ServerAddr: "localhost:8080",
-		Insecure:   true,
+		PlainText:  true,
 		AuthToken:  os.Getenv("ARGOCD_TOKEN"),
 	}
 

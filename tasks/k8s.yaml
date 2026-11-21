@@ -21,6 +21,7 @@ tasks:
 
   cluster:delete:
     desc: "Clean up k3d cluster."
+    ignore_error: true
     cmds:
       - k3d cluster delete {{.CLUSTER_NAME}}
 
@@ -48,8 +49,10 @@ tasks:
   bootstrap:
     desc: "Bootstrap apps"
     cmds:
+      # Traefik (and the Gateway API CRDs it and argocd's HTTPRoute depend on) must exist before
+      # the argocd chart, since its HTTPRoute template needs the Gateway API CRDs installed.
+      - task: bootstrap:traefik
       - task: bootstrap:argocd
-      - task: bootstrap:ingress-nginx
 
   bootstrap:argocd:
     desc: "Bootstrap ArgoCD."
@@ -58,9 +61,10 @@ tasks:
       - cd integration/kubernetes/argocd; helm dependency build
       - helm install argocd integration/kubernetes/argocd --namespace default
 
-  bootstrap:ingress-nginx:
-    desc: "Bootstrap Ingress"
+  bootstrap:traefik:
+    desc: "Bootstrap Gateway API CRDs and Traefik."
     cmds:
-      - helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-      - cd integration/kubernetes/ingress-nginx; helm dependency build
-      - helm install ingress-nginx integration/kubernetes/ingress-nginx --namespace default
+      - kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.7.0/standard-install.yaml
+      - helm repo add traefik https://traefik.github.io/charts
+      - cd integration/kubernetes/traefik; helm dependency build
+      - helm install traefik integration/kubernetes/traefik --namespace default

@@ -50,6 +50,7 @@ func NewRootCommand() *cobra.Command {
 
 	cmd.PersistentFlags().StringVar(&argonap.Config.ServerAddr, "server-address", "", "ArgoCD server address")
 	cmd.PersistentFlags().BoolVar(&argonap.Config.Insecure, "insecure", false, "Don't validate SSL certificate on client request")
+	cmd.PersistentFlags().BoolVar(&argonap.Config.PlainText, "plaintext", false, "Connect to ArgoCD without TLS")
 	cmd.PersistentFlags().StringVar(&argonap.Config.AuthToken, "auth-token", "", "JWT Authentication Token")
 	cmd.PersistentFlags().StringSliceVar(&argonap.Config.ProjectNames, "name", []string{}, "Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.")
 	cmd.PersistentFlags().StringSliceVar(&argonap.Config.LabelsAsStrings, "label", []string{}, "Labels to filter projects on in format 'key=value'.  Can be used multiple times.")

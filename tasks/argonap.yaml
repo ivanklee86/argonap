@@ -4,7 +4,7 @@ version: '3'
 
 env:
   ARGONAP_SERVER_ADDRESS: localhost:8080
-  ARGONAP_INSECURE: true
+  ARGONAP_PLAINTEXT: true
 
 tasks:
   clear:

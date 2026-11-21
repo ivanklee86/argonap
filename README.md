@@ -109,6 +109,7 @@ Global Flags:
       --insecure                Don't validate SSL certificate on client request
       --label strings           Labels to filter projects on in format 'key=value'.  Can be used multiple times.
       --name strings            Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.
+      --plaintext               Connect to ArgoCD without TLS
       --server-address string   ArgoCD server address
       --timeout int             Context timeout in seconds. (default 240)
       --workers int             # of parallel workers. (default 4)
@@ -134,6 +135,7 @@ Global Flags:
       --insecure                Don't validate SSL certificate on client request
       --label strings           Labels to filter projects on in format 'key=value'.  Can be used multiple times.
       --name strings            Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.
+      --plaintext               Connect to ArgoCD without TLS
       --server-address string   ArgoCD server address
       --timeout int             Context timeout in seconds. (default 240)
       --workers int             # of parallel workers. (default 4)

@@ -13,3 +13,11 @@ argo-cd:
 
     params:
       server.insecure: true
+
+  redis:
+    image:
+      # The chart's default, ecr-public.aws.com/docker/library/redis, is the same official image, but
+      # ECR Public answers anonymous pulls from shared GitHub runner IPs with 429 Too Many Requests,
+      # leaving argocd-redis in ImagePullBackOff. The tag is left to the chart so bumps stay in step.
+      # Same fix as tangle's ADR 0030.
+      repository: docker.io/library/redis

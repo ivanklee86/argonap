@@ -11,17 +11,20 @@ tasks:
   login:
     desc: "Log in to ArgoCD"
     cmds:
-      - argocd login localhost:8080 --username {{ .ARGOCD_USERNAME }} --password {{ .ARGOCD_PASSWORD }} --insecure --grpc-web
+      - argocd login localhost:8080 --username {{ .ARGOCD_USERNAME }} --password {{ .ARGOCD_PASSWORD }} --plaintext --grpc-web --skip-test-tls
     vars:
       ARGOCD_USERNAME: admin
       ARGOCD_PASSWORD:
         sh: kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 
   healthcheck:
-    desc: "Wait for servies to start"
+    desc: "Wait for services to start"
     cmds:
-      - kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server
-      - kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=ingress-nginx
+      # Every ArgoCD workload, not just argocd-server, and with explicit timeouts (kubectl's
+      # default is 30s, which a cold k3d cluster pulling images can easily exceed).
+      - kubectl wait --for=condition=Available deployment -l app.kubernetes.io/part-of=argocd --timeout=300s
+      - kubectl rollout status statefulset/argocd-application-controller --timeout=300s
+      - kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=traefik --timeout=300s
 
   token:
     desc: "Generate token for service account."

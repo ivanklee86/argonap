@@ -20,6 +20,7 @@ type IArgoCDClient interface {
 type ArgoCDClientOptions struct {
 	ServerAddr string
 	Insecure   bool
+	PlainText  bool
 	AuthToken  string
 }
 
@@ -31,6 +32,7 @@ func New(aco *ArgoCDClientOptions) (IArgoCDClient, error) {
 	apiClient, err := apiclient.NewClient(&apiclient.ClientOptions{
 		ServerAddr: aco.ServerAddr,
 		Insecure:   aco.Insecure,
+		PlainText:  aco.PlainText,
 		AuthToken:  aco.AuthToken,
 		GRPCWeb:    true,
 	})

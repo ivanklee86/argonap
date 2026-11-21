@@ -20,7 +20,7 @@ func TestOutputs(t *testing.T) {
 
 	config := Config{
 		ServerAddr: "localhost:8080",
-		Insecure:   true,
+		PlainText:  true,
 		AuthToken:  os.Getenv("ARGOCD_TOKEN"),
 	}
 
