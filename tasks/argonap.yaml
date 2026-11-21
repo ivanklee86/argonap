@@ -11,7 +11,7 @@ tasks:
     desc: "Test that argonap can clear syncWindows."
     cmds:
       - ./bin/argonap clear --auth-token ${ARGOCD_TOKEN}
-  
+
   set:
     desc: "Set syncWindows."
     cmds:

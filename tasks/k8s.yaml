@@ -23,7 +23,7 @@ tasks:
     desc: "Clean up k3d cluster."
     cmds:
       - k3d cluster delete {{.CLUSTER_NAME}}
-  
+
   cluster:config:
     desc: "Get k3d cluster config."
     cmds:

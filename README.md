@@ -9,6 +9,7 @@ CLI to make 🐙 take a quick 💤
 aka
 
 ArgoCD [SyncWindows](https://argo-cd.readthedocs.io/en/stable/user-guide/sync_windows/) are great for addressing those whacky situations that somehow pop up in real life:
+
 - Holidays
 - Failovers
 - Maintainance
@@ -20,17 +21,20 @@ ArgoCD [SyncWindows](https://argo-cd.readthedocs.io/en/stable/user-guide/sync_wi
 ## Installation
 
 ### Homebrew
+
 ```sh
 brew tap ivanklee86/homebrew-tap
 brew install ivanklee86/tap/argonap
 ```
 
 ### Docker Image
+
 ```sh
 docker run -it --rm ghcr.io/ivanklee86/argonap:latest
 ```
 
 ### Go
+
 ```sh
 go install github.com/ivanklee86/argonap@latest
 ```
@@ -52,6 +56,7 @@ configs:
 ```
 
 A JWT can be then generated using the ArgoCD CLI using the following command:
+
 ```shell
 argocd login # Using username/password or SSO
 argocd account generate-token --account YOUR_ACCOUNT
@@ -62,6 +67,7 @@ argocd account generate-token --account YOUR_ACCOUNT
 ## Selection
 
 Projects can be selected by the following CLI flags.  Flags can be used multiple times.
+
 - `--name` will cause `argonap` to only make changes to the target AppProject(s).
 - `--label` will only select AppProjects where all labels are matched.  Labels should be in format `key=value`.  Using this flag multiple times will select projects that match all specified labels.
 
@@ -74,6 +80,7 @@ Passing no options will run the command on all projects.
 The `set` command takes a file that contain a list SyncWindows to add to projects matching the selection criteria.  The file should be a JSON file containing items that match the [SyncWindows struct](https://pkg.go.dev/github.com/argoproj/argo-cd@v1.8.7/pkg/apis/application/v1alpha1#SyncWindow).
 
 Example file:
+
 ```json
 [
     {
@@ -86,7 +93,8 @@ Example file:
 ```
 
 #### Help
-```
+
+```text
 Set SyncWindows from file
 
 Usage:
@@ -110,9 +118,9 @@ Global Flags:
 
 The `clear` command removes **all** SyncWindows on projects matching selection criteria.
 
-
 #### Help
-```
+
+```text
 Clear SyncWindows on all AppProjects.
 
 Usage:

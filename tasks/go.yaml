@@ -22,7 +22,7 @@ tasks:
       - go install github.com/jstemmer/go-junit-report/v2@latest
       - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
       - go install github.com/hairyhenderson/gomplate/v4/cmd/gomplate@latest
-  
+
   build:
     desc: Builds binary.
     cmds:
@@ -33,7 +33,7 @@ tasks:
     desc: Formats Golang code.
     cmds:
       - go fmt $(go list ./...)
-  
+
   lint:
     desc: Lints Golang code.
     cmds:
@@ -43,7 +43,7 @@ tasks:
     desc: Run Golang tests.
     cmds:
       - go test -v ./... 2>&1
-  
+
   test-ci:
     desc: Run Golang tests and generate coverage report.
     cmds:
