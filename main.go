@@ -44,18 +44,18 @@ func NewRootCommand() *cobra.Command {
 			return initializeConfig(cmd)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Fprint(argonap.Out, cmd.UsageString())
+			_, _ = fmt.Fprint(argonap.Out, cmd.UsageString())
 		},
 	}
 
-	cmd.PersistentFlags().StringVar(&argonap.Config.ServerAddr, "server-address", "", "ArgoCD server address")
-	cmd.PersistentFlags().BoolVar(&argonap.Config.Insecure, "insecure", false, "Don't validate SSL certificate on client request")
-	cmd.PersistentFlags().BoolVar(&argonap.Config.PlainText, "plaintext", false, "Connect to ArgoCD without TLS")
-	cmd.PersistentFlags().StringVar(&argonap.Config.AuthToken, "auth-token", "", "JWT Authentication Token")
-	cmd.PersistentFlags().StringSliceVar(&argonap.Config.ProjectNames, "name", []string{}, "Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.")
-	cmd.PersistentFlags().StringSliceVar(&argonap.Config.LabelsAsStrings, "label", []string{}, "Labels to filter projects on in format 'key=value'.  Can be used multiple times.")
-	cmd.PersistentFlags().IntVar(&argonap.Config.Timeout, "timeout", 240, "Context timeout in seconds.")
-	cmd.PersistentFlags().IntVar(&argonap.Config.Workers, "workers", 4, "# of parallel workers.")
+	cmd.PersistentFlags().StringVar(&argonap.ServerAddr, "server-address", "", "ArgoCD server address")
+	cmd.PersistentFlags().BoolVar(&argonap.Insecure, "insecure", false, "Don't validate SSL certificate on client request")
+	cmd.PersistentFlags().BoolVar(&argonap.PlainText, "plaintext", false, "Connect to ArgoCD without TLS")
+	cmd.PersistentFlags().StringVar(&argonap.AuthToken, "auth-token", "", "JWT Authentication Token")
+	cmd.PersistentFlags().StringSliceVar(&argonap.ProjectNames, "name", []string{}, "Project names to update.  If specified, label filtering will not apply.  Can be used multiple times.")
+	cmd.PersistentFlags().StringSliceVar(&argonap.LabelsAsStrings, "label", []string{}, "Labels to filter projects on in format 'key=value'.  Can be used multiple times.")
+	cmd.PersistentFlags().IntVar(&argonap.Timeout, "timeout", 240, "Context timeout in seconds.")
+	cmd.PersistentFlags().IntVar(&argonap.Workers, "workers", 4, "# of parallel workers.")
 
 	cmd.AddCommand(NewClearCommand(argonap))
 	cmd.AddCommand(NewSetCommand(argonap))
@@ -87,7 +87,7 @@ func NewSetCommand(argonap *cli.Argonap) *cobra.Command {
 			argonap.SetSyncWindows()
 		},
 	}
-	cmd.PersistentFlags().StringVar(&argonap.Config.SyncWindowsFile, "file", "", "Path to file with SyncWindows to configure")
+	cmd.PersistentFlags().StringVar(&argonap.SyncWindowsFile, "file", "", "Path to file with SyncWindows to configure")
 
 	return cmd
 }

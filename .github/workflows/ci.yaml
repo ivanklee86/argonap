@@ -19,7 +19,7 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v5
       with:
-        go-version: 1.23
+        go-version-file: go.mod
     - name: Install Task
       uses: arduino/setup-task@v2
     - name: Set up Docker
@@ -62,12 +62,12 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
     - name: Install Go
       uses: actions/setup-go@v5
       with:
-        go-version: 1.23.x
-    - name: Checkout code
-      uses: actions/checkout@v4
+        go-version-file: go.mod
     - name: Generate format report.
       run: gofmt -d .
     - name: Run format again (so job will error if format issues found).

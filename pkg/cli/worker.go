@@ -3,7 +3,7 @@ package cli
 import (
 	"context"
 
-	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
+	"github.com/argoproj/argo-cd/v3/pkg/apis/application/v1alpha1"
 	"github.com/ivanklee86/argonap/pkg/client"
 )
 
@@ -22,14 +22,14 @@ type WorkerResult struct {
 	Err         *error
 }
 
-func SetWorker(id int, client client.IArgoCDClient, context context.Context, syncWindowsToSet []v1alpha1.SyncWindow, projects <-chan *v1alpha1.AppProject, results chan<- WorkerResult) {
+func SetWorker(id int, client client.IArgoCDClient, context context.Context, syncWindowsToSet []v1alpha1.InlineSyncWindow, projects <-chan *v1alpha1.AppProject, results chan<- WorkerResult) {
 	for project := range projects {
 		result := WorkerResult{
 			Status:      StatusIncomplete,
-			ProjectName: project.ObjectMeta.Name,
+			ProjectName: project.Name,
 		}
 
-		appProjectToUpdate, err := client.GetProject(context, project.ObjectMeta.Name)
+		appProjectToUpdate, err := client.GetProject(context, project.Name)
 		if err != nil {
 			result.Status = StatusFailure
 			result.Err = &err
@@ -69,10 +69,10 @@ func ClearWorker(id int, client client.IArgoCDClient, context context.Context, p
 	for project := range projects {
 		result := WorkerResult{
 			Status:      StatusIncomplete,
-			ProjectName: project.ObjectMeta.Name,
+			ProjectName: project.Name,
 		}
 
-		appProjectToClear, err := client.GetProject(context, project.ObjectMeta.Name)
+		appProjectToClear, err := client.GetProject(context, project.Name)
 		if err != nil {
 			result.Status = StatusFailure
 			result.Err = &err

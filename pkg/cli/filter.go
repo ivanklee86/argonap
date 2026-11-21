@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
+	"github.com/argoproj/argo-cd/v3/pkg/apis/application/v1alpha1"
 )
 
 func isMapSubset[K, V comparable](m, sub map[K]V) bool {
@@ -30,13 +30,13 @@ func filterProjects(appProjects *v1alpha1.AppProjectList, names []string, labels
 
 	if len(names) > 0 {
 		for _, appProject := range appProjects.Items {
-			if arrayContains(names, appProject.ObjectMeta.Name) {
+			if arrayContains(names, appProject.Name) {
 				matchingProjects = append(matchingProjects, appProject)
 			}
 		}
 	} else {
 		for _, appProject := range appProjects.Items {
-			if isMapSubset(appProject.ObjectMeta.Labels, labels) {
+			if isMapSubset(appProject.Labels, labels) {
 				// Additional filter to only selct projects with SyncWindows.
 				if hasSyncWindow {
 					if len(appProject.Spec.SyncWindows) > 0 {

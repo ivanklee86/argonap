@@ -1,0 +1,15 @@
+version: "2"
+
+linters:
+  # The default "standard" set (errcheck, govet, ineffassign, staticcheck, unused), stated
+  # explicitly so a golangci-lint upgrade doesn't silently change what CI enforces.
+  default: standard
+
+formatters:
+  enable:
+    - gofmt
+
+issues:
+  # Report every finding, not golangci-lint's default of 3 identical ones per linter.
+  max-issues-per-linter: 0
+  max-same-issues: 0

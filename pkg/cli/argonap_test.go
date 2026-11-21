@@ -44,7 +44,7 @@ func TestArgonapHappyPath(t *testing.T) {
 	t.Run("argonap configuration setup", func(t *testing.T) {
 		expectedMap := make(map[string]string)
 		expectedMap["purpose"] = "tests"
-		assert.Equal(t, argonap.Config.Labels, expectedMap)
+		assert.Equal(t, argonap.Labels, expectedMap)
 	})
 
 	t.Run("argonap can clear all SyncWindows", func(t *testing.T) {

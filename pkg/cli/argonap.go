@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
+	"github.com/argoproj/argo-cd/v3/pkg/apis/application/v1alpha1"
 	"github.com/ivanklee86/argonap/pkg/client"
 	"github.com/jedib0t/go-pretty/v6/list"
 )
@@ -72,7 +72,7 @@ func displayFilteredProjects(projects *[]v1alpha1.AppProject) string {
 	l := list.NewWriter()
 	l.SetStyle(list.StyleBulletCircle)
 	for _, p := range *projects {
-		l.AppendItem(p.ObjectMeta.Name)
+		l.AppendItem(p.Name)
 	}
 
 	return l.Render()
@@ -105,19 +105,19 @@ func NewWithConfig(config Config) *Argonap {
 }
 
 func (a *Argonap) Connect() {
-	if a.Config.ServerAddr == "" {
+	if a.ServerAddr == "" {
 		a.Error("ArgoCD server address not set.")
 	}
 
-	if a.Config.AuthToken == "" {
+	if a.AuthToken == "" {
 		a.Error("ArgoCD JWT auth token is not set.")
 	}
 
 	clientConfig := client.ArgoCDClientOptions{
-		ServerAddr: a.Config.ServerAddr,
-		Insecure:   a.Config.Insecure,
-		PlainText:  a.Config.PlainText,
-		AuthToken:  a.Config.AuthToken,
+		ServerAddr: a.ServerAddr,
+		Insecure:   a.Insecure,
+		PlainText:  a.PlainText,
+		AuthToken:  a.AuthToken,
 	}
 	argocdClient, err := client.New(&clientConfig)
 	if err != nil {
@@ -129,7 +129,7 @@ func (a *Argonap) Connect() {
 }
 
 func (a *Argonap) ClearSyncWindows() {
-	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Duration(a.Config.Timeout)*time.Second)
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Duration(a.Timeout)*time.Second)
 	defer cancel()
 
 	a.OutputHeading("🔍  Searching for Projects.")
@@ -138,7 +138,7 @@ func (a *Argonap) ClearSyncWindows() {
 		a.Error(fmt.Sprintf("Error fetching Projects: %s", err.Error()))
 	}
 
-	appProjectsToClear := filterProjects(appProjects, a.Config.ProjectNames, a.Config.Labels, true)
+	appProjectsToClear := filterProjects(appProjects, a.ProjectNames, a.Labels, true)
 
 	a.Output(fmt.Sprintf("%d projects found with SyncWindows.", len(appProjectsToClear)))
 	if len(appProjectsToClear) > 0 {
@@ -150,7 +150,7 @@ func (a *Argonap) ClearSyncWindows() {
 
 	a.OutputHeading("🛠️  Clearing SyncWindows on Projects.")
 	// Start workers
-	for i := 1; i <= a.Config.Workers; i++ {
+	for i := 1; i <= a.Workers; i++ {
 		go ClearWorker(i, a.ArgoCDClient, ctxTimeout, projects, results)
 	}
 
@@ -169,10 +169,10 @@ func (a *Argonap) ClearSyncWindows() {
 }
 
 func (a *Argonap) SetSyncWindows() {
-	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Duration(a.Config.Timeout)*time.Second)
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Duration(a.Timeout)*time.Second)
 	defer cancel()
 
-	syncWindowsToSet, err := readSyncWindowsFromFile(a.Config.SyncWindowsFile)
+	syncWindowsToSet, err := readSyncWindowsFromFile(a.SyncWindowsFile)
 	if err != nil {
 		a.Error(fmt.Sprintf("Unable to read SyncWindows file. %s", err.Error()))
 	}
@@ -183,7 +183,7 @@ func (a *Argonap) SetSyncWindows() {
 		a.Error(fmt.Sprintf("Error fetching Projects. %s", err.Error()))
 	}
 
-	appProjectsToUpdate := filterProjects(appProjects, a.Config.ProjectNames, a.Config.Labels, false)
+	appProjectsToUpdate := filterProjects(appProjects, a.ProjectNames, a.Labels, false)
 
 	a.Output(fmt.Sprintf("%d projects found to update:", len(appProjectsToUpdate)))
 	if len(appProjectsToUpdate) > 0 {
@@ -195,7 +195,7 @@ func (a *Argonap) SetSyncWindows() {
 
 	a.OutputHeading("🛠️  Setting SyncWindows on Projects.")
 	// Start workers
-	for i := 1; i <= a.Config.Workers; i++ {
+	for i := 1; i <= a.Workers; i++ {
 		go SetWorker(i, a.ArgoCDClient, ctxTimeout, syncWindowsToSet, projects, results)
 	}
 

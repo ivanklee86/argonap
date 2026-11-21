@@ -3,7 +3,7 @@ package cli
 import (
 	"testing"
 
-	"github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
+	"github.com/argoproj/argo-cd/v3/pkg/apis/application/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -95,7 +95,7 @@ func TestProjectFilter(t *testing.T) {
 		tags["team"] = "Eagles"
 		projectResult := filterProjects(&projectsList, []string{}, tags, false)
 		assert.Len(t, projectResult, 1)
-		assert.Equal(t, projectResult[0].ObjectMeta.Name, "ProjectC")
+		assert.Equal(t, projectResult[0].Name, "ProjectC")
 	})
 
 	t.Run("filterProjects returns some matching projects if labels are specified", func(t *testing.T) {
@@ -109,7 +109,7 @@ func TestProjectFilter(t *testing.T) {
 		tags["env"] = "prod"
 		projectResult := filterProjects(&projectsList, []string{}, tags, true)
 		assert.Len(t, projectResult, 1)
-		assert.Equal(t, projectResult[0].ObjectMeta.Name, "ProjectA")
+		assert.Equal(t, projectResult[0].Name, "ProjectA")
 	})
 
 	t.Run("filterProjects returns named project if specified", func(t *testing.T) {
