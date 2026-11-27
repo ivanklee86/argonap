@@ -200,11 +200,11 @@ require (
 // placeholders without them. Change these only together with a deliberate argo-cd bump.
 replace (
 	github.com/golang/protobuf => github.com/golang/protobuf v1.5.4
-	github.com/grpc-ecosystem/grpc-gateway => github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/grpc-ecosystem/grpc-gateway/v2 => github.com/grpc-ecosystem/grpc-gateway/v2 v2.34.0
 	golang.org/x/tools => golang.org/x/tools v0.53.0
 
 	// Avoid CVE-2022-3064
-	gopkg.in/yaml.v2 => gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 => gopkg.in/yaml.v2 v3.0.1
 
 	k8s.io/api => k8s.io/api v0.37.0
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.37.0
