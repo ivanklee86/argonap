@@ -13,10 +13,10 @@ repos:
       hooks:
           - id: go-fmt
     - repo: https://github.com/DavidAnson/markdownlint-cli2
-      rev: v0.23.3
+      rev: v0.24.2
       hooks:
           - id: markdownlint-cli2
     - repo: https://github.com/renovatebot/pre-commit-hooks
-      rev: 44.103.6
+      rev: 44.257.9
       hooks:
           - id: renovate-config-validator

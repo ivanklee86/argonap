@@ -56,7 +56,7 @@ jobs:
       with:
         go-version-file: go.mod
     - name: Run pre-commit hooks via prek
-      uses: j178/prek-action@44924fe9ef4a6f88253c4b6b1bf11c689d3ce53d # v3.1.0
+      uses: j178/prek-action@7b101f8338a08d2bd6fdb3625e4e7692428763a3 # v3.1.1
       with:
         prek-version: v0.5.11 # github-releases/j178/prek
 
@@ -162,7 +162,7 @@ jobs:
       uses: goreleaser/goreleaser-action@a4f02ab5355a589de60d917a659ce617ed19b3de # v7.3.0
       with:
         distribution: goreleaser
-        version: v2.20.2 # github-releases/goreleaser/goreleaser
+        version: v2.20.3 # github-releases/goreleaser/goreleaser
         args: release --snapshot --clean
     - name: Smoke-test both images
       run: |
