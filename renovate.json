@@ -25,20 +25,6 @@
       "groupName": "go"
     },
     {
-      "description": "argo-cd moves only on deliberate bumps (tangle ADR 0015); majors still raise a PR",
-      "matchManagers": [
-        "gomod"
-      ],
-      "matchPackageNames": [
-        "github.com/argoproj/argo-cd/v3"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "enabled": false
-    },
-    {
       "description": "k8s.io/* and gitops-engine mirror argo-cd's own replace block (tangle ADR 0020); only an argo-cd bump should move them",
       "matchDatasources": [
         "go"
@@ -46,6 +32,16 @@
       "matchPackageNames": [
         "k8s.io/**",
         "github.com/argoproj/argo-cd/gitops-engine/**"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "go.mod's replace block mirrors argo-cd's own; only 'task argocd:bump' changes it (scripts/argocd_version.sh)",
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchDepTypes": [
+        "replace"
       ],
       "enabled": false
     },
@@ -74,8 +70,7 @@
         "rancher/kubectl",
         "rancher/k3s",
         "alpine/helm",
-        "derailed/k9s",
-        "quay.io/argoproj/argocd"
+        "derailed/k9s"
       ],
       "groupName": "k8s"
     },
@@ -151,6 +146,17 @@
       ],
       "automerge": true,
       "platformAutomerge": true
+    },
+    {
+      "description": "Every Argo CD touchpoint moves together and only on demand (tangle ADR 0015): approve from the Dependency Dashboard, then run 'task argocd:bump VERSION=<version>' on the PR to resync go.mod's replace block; CI's argocd-lockstep job fails until then. Last, so it overrides the k8s group and the automerge rules above.",
+      "matchPackageNames": [
+        "github.com/argoproj/argo-cd/v3",
+        "argoproj/argo-cd",
+        "quay.io/argoproj/argocd"
+      ],
+      "groupName": "argocd",
+      "dependencyDashboardApproval": true,
+      "automerge": false
     }
   ],
   "customManagers": [

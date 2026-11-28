@@ -60,6 +60,21 @@ jobs:
       with:
         prek-version: v0.5.11 # github-releases/j178/prek
 
+  argocd-lockstep:
+    # go.mod's replace block, the CI argocd CLI and the devcontainer argocd image all have to match
+    # the pinned argo-cd module. Renovate can't keep them in step on its own, so this names the
+    # drift directly instead of leaving it to surface as a confusing build or test failure.
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+    - name: Install Go
+      uses: actions/setup-go@v7
+      with:
+        go-version-file: go.mod
+    - name: Check Argo CD touchpoints
+      run: ./scripts/argocd_version.sh check
+
   test:
     # Every test talks to a live Argo CD, so this job is the whole test suite.
     runs-on: ubuntu-latest

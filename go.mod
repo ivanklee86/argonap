@@ -195,13 +195,14 @@ require (
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 
-// Mirrored from argo-cd v3.6.2's own go.mod replace block. Replace directives aren't inherited
-// by consumers, and k8s.io/kubernetes requires its staging modules at unresolvable v0.0.0
-// placeholders without them. Change these only together with a deliberate argo-cd bump.
+// Mirrored from argo-cd v3.6.2's own go.mod replace directives by scripts/argocd_version.sh.
+// Replace directives aren't inherited by consumers, and k8s.io/kubernetes requires its staging
+// modules at unresolvable v0.0.0 placeholders without them. Do not edit by hand or add
+// project-specific replaces here: run 'task argocd:bump VERSION=<version>', which rewrites them.
 replace (
 	github.com/golang/protobuf => github.com/golang/protobuf v1.5.4
 	github.com/grpc-ecosystem/grpc-gateway => github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	golang.org/x/tools => golang.org/x/tools v0.53.0
+	golang.org/x/tools => golang.org/x/tools v0.35.0
 
 	// Avoid CVE-2022-3064
 	gopkg.in/yaml.v2 => gopkg.in/yaml.v2 v2.4.0
