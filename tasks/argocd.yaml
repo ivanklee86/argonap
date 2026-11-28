@@ -36,3 +36,15 @@ tasks:
     desc: "Cleans up projects."
     cmds:
       - kubectl get appprojects --no-headers=true | awk /pr/'{print $1}' | xargs kubectl delete appprojects || true
+
+  check-version:
+    desc: "Check that every Argo CD touchpoint (go.mod require + replace block, CI CLI, devcontainer CLI) matches the pinned argo-cd module."
+    cmds:
+      - ./scripts/argocd_version.sh check
+
+  bump:
+    desc: "Move argo-cd and everything that mirrors it to VERSION, e.g. task argocd:bump VERSION=v3.6.3"
+    requires:
+      vars: [VERSION]
+    cmds:
+      - ./scripts/argocd_version.sh bump {{.VERSION}}
